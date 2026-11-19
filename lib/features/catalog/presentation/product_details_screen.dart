@@ -46,7 +46,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   height: 220,
                   width: double.infinity,
                   decoration: BoxDecoration(
-                    color: AppTheme.softPink.withValues(alpha: 0.3),
+                    color: AppTheme.softMaroon.withValues(alpha: 0.3),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: product['image_url'] != null
@@ -54,7 +54,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           borderRadius: BorderRadius.circular(16),
                           child: Image.network(product['image_url'], fit: BoxFit.cover),
                         )
-                      : const Icon(Icons.fastfood, size: 80, color: AppTheme.primaryPink),
+                      : const Icon(Icons.fastfood, size: 80, color: AppTheme.primaryMaroon),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -67,7 +67,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                   style: const TextStyle(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: AppTheme.primaryPink,
+                    color: AppTheme.primaryMaroon,
                   ),
                 ),
                 const SizedBox(height: 12),
@@ -89,7 +89,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                       return ChoiceChip(
                         label: Text('${v['name']} (+₱${modifier.toStringAsFixed(2)})'),
                         selected: isSelected,
-                        selectedColor: AppTheme.primaryPink,
+                        selectedColor: AppTheme.primaryMaroon,
                         labelStyle: TextStyle(
                           color: isSelected ? Colors.white : AppTheme.darkText,
                           fontWeight: FontWeight.bold,
@@ -116,7 +116,7 @@ class _ProductDetailsScreenState extends ConsumerState<ProductDetailsScreen> {
                           return CheckboxListTile(
                             title: Text('${item['name']} (+₱${itemPrice.toStringAsFixed(2)})'),
                             value: isSelected,
-                            activeColor: AppTheme.primaryPink,
+                            activeColor: AppTheme.primaryMaroon,
                             onChanged: (val) {
                               setState(() {
                                 if (val == true) {

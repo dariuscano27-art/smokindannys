@@ -80,7 +80,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Icon(Icons.restaurant_menu, size: 72, color: AppTheme.primaryPink),
+                  const Icon(Icons.restaurant_menu, size: 72, color: AppTheme.primaryMaroon),
                   const SizedBox(height: 16),
                   Text(
                     'Welcome Back!',
@@ -153,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       const Text("Don't have an account?"),
                       TextButton(
                         onPressed: () => context.push('/signup'),
-                        child: const Text('Sign Up', style: TextStyle(color: AppTheme.primaryPink, fontWeight: FontWeight.bold)),
+                        child: const Text('Sign Up', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),

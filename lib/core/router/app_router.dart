@@ -6,6 +6,8 @@ import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/terms_screen.dart';
 import '../../features/catalog/presentation/customer_home_screen.dart';
 
+import '../../core/theme/app_theme.dart';
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
@@ -59,7 +61,7 @@ class SplashScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.restaurant_menu, size: 80, color: Color(0xFFFF69B4)),
+            const Icon(Icons.restaurant_menu, size: 80, color: AppTheme.primaryMaroon),
             const SizedBox(height: 16),
             Text(
               'Smokin Dannys',

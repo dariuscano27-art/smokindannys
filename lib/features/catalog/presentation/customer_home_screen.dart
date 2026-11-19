@@ -89,7 +89,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                       child: ChoiceChip(
                         label: const Text('All'),
                         selected: filterState.categoryId == null,
-                        selectedColor: AppTheme.primaryPink,
+                        selectedColor: AppTheme.primaryMaroon,
                         labelStyle: TextStyle(
                           color: filterState.categoryId == null ? Colors.white : AppTheme.darkText,
                           fontWeight: FontWeight.bold,
@@ -104,7 +104,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                         child: ChoiceChip(
                           label: Text(cat['name']),
                           selected: isSelected,
-                          selectedColor: AppTheme.primaryPink,
+                          selectedColor: AppTheme.primaryMaroon,
                           labelStyle: TextStyle(
                             color: isSelected ? Colors.white : AppTheme.darkText,
                             fontWeight: FontWeight.bold,
@@ -162,11 +162,11 @@ class CustomerHomeScreen extends ConsumerWidget {
                           children: [
                             Expanded(
                               child: Container(
-                                color: AppTheme.softPink.withValues(alpha: 0.3),
+                                color: AppTheme.softMaroon.withValues(alpha: 0.3),
                                 width: double.infinity,
                                 child: product['image_url'] != null
                                     ? Image.network(product['image_url'], fit: BoxFit.cover)
-                                    : const Icon(Icons.fastfood, size: 48, color: AppTheme.primaryPink),
+                                    : const Icon(Icons.fastfood, size: 48, color: AppTheme.primaryMaroon),
                               ),
                             ),
                             Padding(
@@ -184,7 +184,7 @@ class CustomerHomeScreen extends ConsumerWidget {
                                   Text(
                                     '₱${pricePesos.toStringAsFixed(2)}',
                                     style: const TextStyle(
-                                      color: AppTheme.primaryPink,
+                                      color: AppTheme.primaryMaroon,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 15,
                                     ),

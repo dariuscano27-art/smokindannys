@@ -2,21 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  static const Color primaryPink = Color(0xFFFF69B4);
-  static const Color softPink = Color(0xFFFFD6E8);
-  static const Color background = Color(0xFFFFF9FC);
+  static const Color primaryMaroon = Color(0xFF800000);
+  static const Color softMaroon = Color(0xFFF9ECEE);
+  static const Color background = Color(0xFFFFFFFF);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color darkText = Color(0xFF25212A);
   static const Color mutedText = Color(0xFF77717D);
   static const Color errorColor = Color(0xFFE53935);
 
+  // Compatibility aliases
+  static const Color primaryPink = primaryMaroon;
+  static const Color softPink = softMaroon;
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryPink,
-        primary: primaryPink,
-        secondary: softPink,
+        seedColor: primaryMaroon,
+        primary: primaryMaroon,
+        secondary: softMaroon,
         surface: surface,
         error: errorColor,
       ),
@@ -63,12 +67,12 @@ class AppTheme {
         bodySmall: GoogleFonts.inter(color: mutedText),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: surface,
-        foregroundColor: darkText,
+        backgroundColor: primaryMaroon,
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: GoogleFonts.plusJakartaSans(
-          color: darkText,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
@@ -82,7 +86,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryPink,
+          backgroundColor: primaryMaroon,
           foregroundColor: Colors.white,
           textStyle: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,

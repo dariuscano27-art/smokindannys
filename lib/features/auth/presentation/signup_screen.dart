@@ -155,7 +155,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     children: [
                       Checkbox(
                         value: _acceptTerms,
-                        activeColor: AppTheme.primaryPink,
+                        activeColor: AppTheme.primaryMaroon,
                         onChanged: (val) => setState(() => _acceptTerms = val ?? false),
                       ),
                       Expanded(
@@ -187,7 +187,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                       const Text('Already have an account?'),
                       TextButton(
                         onPressed: () => context.pop(),
-                        child: const Text('Sign In', style: TextStyle(color: AppTheme.primaryPink, fontWeight: FontWeight.bold)),
+                        child: const Text('Sign In', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold)),
                       ),
                     ],
                   ),
