@@ -3,11 +3,18 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   static const Color primaryMaroon = Color(0xFF800000);
+  static const Color darkMaroonBg = Color(0xFF140709);
+  static const Color darkCardBg = Color(0xFF1C0A0D);
+  static const Color darkInputBg = Color(0xFF261014);
+  static const Color darkInputBorder = Color(0xFF3D191F);
+  static const Color accentGold = Color(0xFFFFC107);
+  static const Color goldButtonStart = Color(0xFFFFC837);
+  static const Color goldButtonEnd = Color(0xFFFF8008);
   static const Color softMaroon = Color(0xFFF9ECEE);
   static const Color background = Color(0xFFFFFFFF);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color darkText = Color(0xFF25212A);
-  static const Color mutedText = Color(0xFF77717D);
+  static const Color mutedText = Color(0xFF9E8B8E);
   static const Color errorColor = Color(0xFFE53935);
 
   // Compatibility aliases
