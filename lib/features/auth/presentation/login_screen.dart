@@ -17,7 +17,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   late int _selectedTab; // 0 = Log In, 1 = Sign Up
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   final _loginEmailController = TextEditingController();
   final _loginPasswordController = TextEditingController();
 
@@ -136,186 +135,262 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final isLoading = authState.isLoading;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 900;
 
     return Scaffold(
-      backgroundColor: AppTheme.darkMaroonBg,
+      backgroundColor: AppTheme.darkBg,
+      appBar: _buildWebHeader(context, isDesktop),
       body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              // Header Logo & Branding
-              _buildHeaderLogo(),
-
-              const SizedBox(height: 24),
-
-              // Segmented Tab Bar (Log In / Sign Up)
-              _buildSegmentedTabBar(),
-
-              const SizedBox(height: 20),
-
-              // Form Container Card
-              Container(
-                decoration: BoxDecoration(
-                  color: AppTheme.darkCardBg,
-                  borderRadius: BorderRadius.circular(28),
-                  border: Border.all(color: const Color(0xFF331419), width: 1.2),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.4),
-                      blurRadius: 16,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(20.0),
-                child: Form(
-                  key: _formKey,
-                  child: AnimatedSwitcher(
-                    duration: const Duration(milliseconds: 250),
-                    child: _selectedTab == 0
-                        ? _buildLoginForm(isLoading)
-                        : _buildSignupForm(isLoading),
-                  ),
-                ),
+        child: Center(
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: EdgeInsets.symmetric(
+                horizontal: isDesktop ? 40.0 : 20.0,
+                vertical: 24.0,
               ),
-
-              const SizedBox(height: 20),
-            ],
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isDesktop ? 1040 : 480,
+                ),
+                child: isDesktop
+                    ? _buildDesktopWebLayout(isLoading)
+                    : _buildMobileTabletLayout(isLoading),
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildHeaderLogo() {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // Glow Effect
-        Container(
-          width: 140,
-          height: 140,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            gradient: RadialGradient(
-              colors: [
-                const Color(0xFF800000).withOpacity(0.6),
-                const Color(0xFFFF9800).withOpacity(0.2),
-                Colors.transparent,
-              ],
-              radius: 0.8,
-            ),
-          ),
-        ),
-        Column(
+  PreferredSizeWidget _buildWebHeader(BuildContext context, bool isDesktop) {
+    return AppBar(
+      backgroundColor: AppTheme.darkBg,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      toolbarHeight: 70,
+      titleSpacing: isDesktop ? 48 : 16,
+      title: InkWell(
+        onTap: () => context.go('/'),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Mascot Badge
             Container(
-              width: 90,
-              height: 90,
-              decoration: BoxDecoration(
+              width: 32,
+              height: 32,
+              decoration: const BoxDecoration(
                 shape: BoxShape.circle,
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFE65100), Color(0xFFFFB300), Color(0xFF800000)],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-                border: Border.all(color: const Color(0xFFFFD700), width: 2.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: const Color(0xFFFF8008).withOpacity(0.4),
-                    blurRadius: 12,
-                    spreadRadius: 2,
-                  ),
-                ],
+                color: AppTheme.primaryRed,
               ),
-              child: const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.outdoor_grill_rounded, size: 42, color: Colors.white),
-                  ],
-                ),
-              ),
+              child: const Icon(Icons.location_on, size: 18, color: Colors.white),
             ),
-            const SizedBox(height: 10),
-            ShaderMask(
-              shaderCallback: (bounds) => const LinearGradient(
-                colors: [Colors.white, Color(0xFFFFD54F), Colors.white],
-              ).createShader(bounds),
-              child: const Text(
-                'Smokin Dannys',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.extrabold,
-                  letterSpacing: 0.5,
-                  color: Colors.white,
-                ),
-              ),
-            ),
+            const SizedBox(width: 10),
             const Text(
-              'BBQ & POS',
+              'SMOKIN DANNYS',
               style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 2,
-                color: Color(0xFFFFD54F),
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+                color: Colors.white,
               ),
             ),
           ],
         ),
+      ),
+      actions: [
+        TextButton.icon(
+          onPressed: () => context.go('/'),
+          icon: const Icon(Icons.home_outlined, color: AppTheme.textMuted, size: 18),
+          label: const Text('Home', style: TextStyle(color: AppTheme.textMuted, fontWeight: FontWeight.w600)),
+        ),
+        const SizedBox(width: 8),
+        TextButton.icon(
+          onPressed: () => context.go('/customer/home'),
+          icon: const Icon(Icons.restaurant_menu_outlined, color: AppTheme.textMuted, size: 18),
+          label: const Text('Menu', style: TextStyle(color: AppTheme.textMuted, fontWeight: FontWeight.w600)),
+        ),
+        SizedBox(width: isDesktop ? 48 : 16),
       ],
+    );
+  }
+
+  Widget _buildDesktopWebLayout(bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.borderDark, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: Color(0x66000000),
+            blurRadius: 30,
+            offset: Offset(0, 10),
+          ),
+        ],
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: IntrinsicHeight(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // Left Column: Hero Branding
+            Expanded(
+              flex: 5,
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF160303), Color(0xFF0D0D0D)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                padding: const EdgeInsets.all(40.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: AppTheme.primaryRed,
+                      ),
+                      child: const Icon(Icons.outdoor_grill_rounded, size: 32, color: Colors.white),
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'GOOD FOOD.\nDELIVERED\nFASTER.',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.1,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      'Sign in to access your orders, cashier POS terminals, and owner management analytics.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppTheme.textMuted,
+                        height: 1.5,
+                      ),
+                    ),
+                    const SizedBox(height: 32),
+                    _heroCheck('Real-time order placement & kitchen queue'),
+                    const SizedBox(height: 12),
+                    _heroCheck('Touchscreen POS terminal integration'),
+                    const SizedBox(height: 12),
+                    _heroCheck('Owner sales analytics & reports'),
+                  ],
+                ),
+              ),
+            ),
+
+            // Right Column: Form Area
+            Expanded(
+              flex: 5,
+              child: Padding(
+                padding: const EdgeInsets.all(36.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _buildSegmentedTabBar(),
+                      const SizedBox(height: 28),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        child: _selectedTab == 0
+                            ? _buildLoginForm(isLoading)
+                            : _buildSignupForm(isLoading),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _heroCheck(String text) {
+    return Row(
+      children: [
+        const Icon(Icons.check_circle, color: AppTheme.primaryRed, size: 18),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500))),
+      ],
+    );
+  }
+
+  Widget _buildMobileTabletLayout(bool isLoading) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.cardBg,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppTheme.borderDark, width: 1),
+      ),
+      padding: const EdgeInsets.all(24.0),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            const Icon(Icons.outdoor_grill_rounded, size: 48, color: AppTheme.primaryRed),
+            const SizedBox(height: 12),
+            const Text(
+              'SMOKIN DANNYS',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white),
+            ),
+            const SizedBox(height: 20),
+            _buildSegmentedTabBar(),
+            const SizedBox(height: 24),
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              child: _selectedTab == 0
+                  ? _buildLoginForm(isLoading)
+                  : _buildSignupForm(isLoading),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _buildSegmentedTabBar() {
     return Container(
-      height: 54,
+      height: 50,
       decoration: BoxDecoration(
-        color: const Color(0xFF240F13),
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(color: const Color(0xFF3B171D), width: 1.2),
+        color: AppTheme.surfaceBg,
+        borderRadius: BorderRadius.circular(25),
+        border: Border.all(color: AppTheme.borderDark, width: 1),
       ),
       padding: const EdgeInsets.all(4),
       child: Row(
         children: [
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                if (_selectedTab != 0) {
-                  setState(() => _selectedTab = 0);
-                }
-              },
+              onTap: () => setState(() => _selectedTab = 0),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  gradient: _selectedTab == 0
-                      ? const LinearGradient(
-                          colors: [Color(0xFF4A1F18), Color(0xFF331512)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                      : null,
-                  boxShadow: _selectedTab == 0
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFFFFC837).withOpacity(0.2),
-                            blurRadius: 8,
-                          )
-                        ]
-                      : null,
+                  borderRadius: BorderRadius.circular(22),
+                  color: _selectedTab == 0 ? AppTheme.primaryRed : Colors.transparent,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'Log In',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: _selectedTab == 0 ? Colors.white : const Color(0xFF9E8B8E),
+                    color: _selectedTab == 0 ? Colors.white : AppTheme.textMuted,
                   ),
                 ),
               ),
@@ -323,38 +398,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
           Expanded(
             child: GestureDetector(
-              onTap: () {
-                if (_selectedTab != 1) {
-                  setState(() => _selectedTab = 1);
-                }
-              },
+              onTap: () => setState(() => _selectedTab = 1),
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(26),
-                  gradient: _selectedTab == 1
-                      ? const LinearGradient(
-                          colors: [Color(0xFF4A1F18), Color(0xFF331512)],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        )
-                      : null,
-                  boxShadow: _selectedTab == 1
-                      ? [
-                          BoxShadow(
-                            color: const Color(0xFFFFC837).withOpacity(0.2),
-                            blurRadius: 8,
-                          )
-                        ]
-                      : null,
+                  borderRadius: BorderRadius.circular(22),
+                  color: _selectedTab == 1 ? AppTheme.primaryRed : Colors.transparent,
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'Sign Up',
                   style: TextStyle(
-                    fontSize: 15,
+                    fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: _selectedTab == 1 ? Colors.white : const Color(0xFF9E8B8E),
+                    color: _selectedTab == 1 ? Colors.white : AppTheme.textMuted,
                   ),
                 ),
               ),
@@ -370,11 +427,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       key: const ValueKey('login_form'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildFieldLabel('Email'),
+        _buildFieldLabel('Email Address'),
         const SizedBox(height: 6),
         _buildTextField(
           controller: _loginEmailController,
-          hintText: 'davidjonson@gmail.com',
+          hintText: 'name@example.com',
           prefixIcon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
@@ -383,9 +440,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             return null;
           },
         ),
-
         const SizedBox(height: 16),
-
         _buildFieldLabel('Password'),
         const SizedBox(height: 6),
         _buildTextField(
@@ -396,7 +451,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           suffixIcon: IconButton(
             icon: Icon(
               _obscureLoginPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              color: const Color(0xFF9E8B8E),
+              color: AppTheme.textMuted,
               size: 20,
             ),
             onPressed: () => setState(() => _obscureLoginPassword = !_obscureLoginPassword),
@@ -407,32 +462,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             return null;
           },
         ),
-
         const SizedBox(height: 12),
-
-        // Remember Me & Forgot Password Row
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: [
                 SizedBox(
-                  height: 24,
-                  width: 24,
+                  height: 20,
+                  width: 20,
                   child: Checkbox(
                     value: _rememberMe,
-                    activeColor: const Color(0xFFFFC837),
-                    checkColor: Colors.black,
-                    side: const BorderSide(color: Color(0xFF6E565B)),
+                    activeColor: AppTheme.primaryRed,
+                    checkColor: Colors.white,
+                    side: const BorderSide(color: AppTheme.borderDark),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                     onChanged: (val) => setState(() => _rememberMe = val ?? false),
                   ),
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'Remember me',
-                  style: TextStyle(color: Color(0xFFCCCCCC), fontSize: 13),
-                ),
+                const Text('Remember me', style: TextStyle(color: AppTheme.textMuted, fontSize: 13)),
               ],
             ),
             GestureDetector(
@@ -443,33 +492,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               },
               child: const Text(
                 'Forgot Password?',
-                style: TextStyle(
-                  color: Color(0xFFE53935),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: TextStyle(color: AppTheme.primaryRed, fontSize: 13, fontWeight: FontWeight.bold),
               ),
             ),
           ],
         ),
-
         const SizedBox(height: 24),
-
-        // Primary Log In Button
-        _buildActionButton(
-          text: 'Log In',
-          isLoading: isLoading,
-          onPressed: _handleLogin,
-        ),
-
+        _buildActionButton(text: 'Log In', isLoading: isLoading, onPressed: _handleLogin),
         const SizedBox(height: 20),
-
-        // Divider
         _buildSocialDivider(),
-
         const SizedBox(height: 16),
-
-        // Social Logins
         _buildSocialButtons(),
       ],
     );
@@ -486,17 +518,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           controller: _signupFullNameController,
           hintText: 'David Johnson',
           prefixIcon: Icons.person_outline,
-          validator: (value) =>
-              value == null || value.trim().isEmpty ? 'Please enter your full name' : null,
+          validator: (value) => value == null || value.trim().isEmpty ? 'Please enter your full name' : null,
         ),
-
         const SizedBox(height: 14),
-
         _buildFieldLabel('Email Address'),
         const SizedBox(height: 6),
         _buildTextField(
           controller: _signupEmailController,
-          hintText: 'davidjonson@gmail.com',
+          hintText: 'name@example.com',
           prefixIcon: Icons.email_outlined,
           keyboardType: TextInputType.emailAddress,
           validator: (value) {
@@ -505,9 +534,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             return null;
           },
         ),
-
         const SizedBox(height: 14),
-
         _buildFieldLabel('Phone Number'),
         const SizedBox(height: 6),
         _buildTextField(
@@ -515,12 +542,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           hintText: '09123456789',
           prefixIcon: Icons.phone_outlined,
           keyboardType: TextInputType.phone,
-          validator: (value) =>
-              value == null || value.trim().isEmpty ? 'Please enter your phone number' : null,
+          validator: (value) => value == null || value.trim().isEmpty ? 'Please enter your phone number' : null,
         ),
-
         const SizedBox(height: 14),
-
         _buildFieldLabel('Enter Password'),
         const SizedBox(height: 6),
         _buildTextField(
@@ -531,7 +555,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           suffixIcon: IconButton(
             icon: Icon(
               _obscureSignupPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-              color: const Color(0xFF9E8B8E),
+              color: AppTheme.textMuted,
               size: 20,
             ),
             onPressed: () => setState(() => _obscureSignupPassword = !_obscureSignupPassword),
@@ -542,20 +566,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             return null;
           },
         ),
-
         const SizedBox(height: 14),
-
-        // Terms Checkbox
         Row(
           children: [
             SizedBox(
-              height: 24,
-              width: 24,
+              height: 20,
+              width: 20,
               child: Checkbox(
                 value: _acceptTerms,
-                activeColor: const Color(0xFFFFC837),
-                checkColor: Colors.black,
-                side: const BorderSide(color: Color(0xFF6E565B)),
+                activeColor: AppTheme.primaryRed,
+                checkColor: Colors.white,
+                side: const BorderSide(color: AppTheme.borderDark),
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
                 onChanged: (val) => setState(() => _acceptTerms = val ?? false),
               ),
@@ -566,18 +587,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 onTap: () => context.push('/terms'),
                 child: RichText(
                   text: const TextSpan(
-                    style: TextStyle(color: Color(0xFFCCCCCC), fontSize: 12),
+                    style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
                     children: [
                       TextSpan(text: 'I agree to the '),
-                      TextSpan(
-                        text: 'Terms & Conditions',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
+                      TextSpan(text: 'Terms & Conditions', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                       TextSpan(text: ' and '),
-                      TextSpan(
-                        text: 'Privacy Policy',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
+                      TextSpan(text: 'Privacy Policy', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                     ],
                   ),
                 ),
@@ -585,24 +600,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
           ],
         ),
-
         const SizedBox(height: 20),
-
-        // Primary Sign Up Button
-        _buildActionButton(
-          text: 'Sign Up',
-          isLoading: isLoading,
-          onPressed: _handleSignup,
-        ),
-
+        _buildActionButton(text: 'Create Account', isLoading: isLoading, onPressed: _handleSignup),
         const SizedBox(height: 16),
-
-        // Divider
         _buildSocialDivider(),
-
         const SizedBox(height: 14),
-
-        // Social Logins
         _buildSocialButtons(),
       ],
     );
@@ -612,9 +614,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Text(
       label,
       style: const TextStyle(
-        color: Color(0xFFD4C5C8),
+        color: Colors.white,
         fontSize: 13,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.w600,
       ),
     );
   }
@@ -635,31 +637,31 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       style: const TextStyle(color: Colors.white, fontSize: 14),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(color: Color(0xFF6E585C), fontSize: 14),
-        prefixIcon: Icon(prefixIcon, color: const Color(0xFF9E8B8E), size: 20),
+        hintStyle: const TextStyle(color: AppTheme.textMuted, fontSize: 14),
+        prefixIcon: Icon(prefixIcon, color: AppTheme.textMuted, size: 20),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: AppTheme.darkInputBg,
+        fillColor: AppTheme.surfaceBg,
         contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: AppTheme.darkInputBorder, width: 1),
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppTheme.borderDark, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: AppTheme.darkInputBorder, width: 1),
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppTheme.borderDark, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: Color(0xFFFFC837), width: 1.4),
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppTheme.primaryRed, width: 1.8),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(24),
           borderSide: const BorderSide(color: AppTheme.errorColor, width: 1),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: AppTheme.errorColor, width: 1.4),
+          borderRadius: BorderRadius.circular(24),
+          borderSide: const BorderSide(color: AppTheme.errorColor, width: 1.8),
         ),
       ),
       validator: validator,
@@ -671,42 +673,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     required bool isLoading,
     required VoidCallback onPressed,
   }) {
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      height: 52,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(28),
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFFC837), Color(0xFFFF8008)],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFFFF8008).withOpacity(0.35),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      height: 50,
       child: ElevatedButton(
         onPressed: isLoading ? null : onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.transparent,
-          shadowColor: Colors.transparent,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
+          backgroundColor: AppTheme.primaryRed,
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+          elevation: 4,
+          shadowColor: const Color(0x66E50914),
         ),
         child: isLoading
             ? const SizedBox(
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator(color: Colors.black, strokeWidth: 2.5),
+                child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5),
               )
             : Text(
                 text,
                 style: const TextStyle(
-                  color: Colors.black,
-                  fontSize: 16,
+                  color: Colors.white,
+                  fontSize: 15,
                   fontWeight: FontWeight.bold,
                   letterSpacing: 0.5,
                 ),
@@ -718,15 +707,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildSocialDivider() {
     return Row(
       children: [
-        Expanded(child: Container(height: 1, color: const Color(0xFF33171C))),
+        Expanded(child: Container(height: 1, color: AppTheme.borderDark)),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.0),
           child: Text(
             'or continue with',
-            style: TextStyle(color: Color(0xFF8C7377), fontSize: 12),
+            style: TextStyle(color: AppTheme.textMuted, fontSize: 12),
           ),
         ),
-        Expanded(child: Container(height: 1, color: const Color(0xFF33171C))),
+        Expanded(child: Container(height: 1, color: AppTheme.borderDark)),
       ],
     );
   }
@@ -736,41 +725,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       children: [
         Expanded(
           child: _buildSocialPillButton(
-            icon: Container(
-              width: 20,
-              height: 20,
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white,
-              ),
-              alignment: Alignment.center,
-              child: const Text(
-                'G',
-                style: TextStyle(
-                  color: Color(0xFFEA4335),
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-            ),
+            icon: const Text('G', style: TextStyle(color: Color(0xFFEA4335), fontWeight: FontWeight.bold, fontSize: 14)),
             label: 'Google',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Google Sign-In coming soon!')),
-              );
-            },
+            onTap: () {},
           ),
         ),
         const SizedBox(width: 14),
         Expanded(
           child: _buildSocialPillButton(
-            icon: const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 22),
+            icon: const Icon(Icons.facebook, color: Color(0xFF1877F2), size: 20),
             label: 'Facebook',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Facebook Sign-In coming soon!')),
-              );
-            },
+            onTap: () {},
           ),
         ),
       ],
@@ -784,13 +749,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(28),
+      borderRadius: BorderRadius.circular(24),
       child: Container(
-        height: 48,
+        height: 46,
         decoration: BoxDecoration(
-          color: AppTheme.darkInputBg,
-          borderRadius: BorderRadius.circular(28),
-          border: Border.all(color: const Color(0xFF3A181E), width: 1),
+          color: AppTheme.surfaceBg,
+          borderRadius: BorderRadius.circular(24),
+          border: Border.all(color: AppTheme.borderDark, width: 1),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -801,7 +766,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               label,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 14,
+                fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
             ),

@@ -5,7 +5,7 @@ import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/terms_screen.dart';
 import '../../features/catalog/presentation/customer_home_screen.dart';
-
+import '../../features/landing/presentation/landing_screen.dart';
 import '../../core/theme/app_theme.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
@@ -14,8 +14,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
-        name: 'splash',
-        builder: (context, state) => const SplashScreen(),
+        name: 'landing',
+        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/login',
