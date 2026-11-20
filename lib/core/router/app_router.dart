@@ -1,19 +1,85 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import '../../features/auth/presentation/admin_login_page.dart';
+import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
 import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/terms_screen.dart';
 import '../../features/catalog/presentation/customer_home_screen.dart';
+import '../../features/dashboard/presentation/owner_dashboard_screen.dart';
 import '../../features/landing/presentation/landing_screen.dart';
+import '../../features/pos/presentation/cashier_pos_screen.dart';
 import '../../core/theme/app_theme.dart';
 
+class RouterNotifier extends ChangeNotifier {
+  final Ref _ref;
+
+  RouterNotifier(this._ref) {
+    _ref.listen<bool>(isAdminAuthenticatedProvider, (previous, next) {
+      if (previous != next) {
+        notifyListeners();
+      }
+    });
+  }
+}
+
+final routerNotifierProvider = Provider<RouterNotifier>((ref) {
+  return RouterNotifier(ref);
+});
+
 final appRouterProvider = Provider<GoRouter>((ref) {
+  final notifier = ref.watch(routerNotifierProvider);
+
   return GoRouter(
+    refreshListenable: notifier,
     initialLocation: '/',
+    redirect: (context, state) {
+      final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
+      final isGoingToAdminDashboard = state.matchedLocation == '/owner/dashboard' ||
+          state.matchedLocation == '/admin/dashboard';
+
+      // Protect admin dashboard route from unauthenticated users
+      if (isGoingToAdminDashboard && !isAdminAuthenticated) {
+        return '/';
+      }
+      return null;
+    },
     routes: [
       GoRoute(
         path: '/',
+        name: 'admin_login',
+        builder: (context, state) => AdminLoginPage(
+          onLogin: (username, password, rememberMe) async {
+            final success = await ref
+                .read(authControllerProvider.notifier)
+                .adminSignIn(username, password, rememberMe);
+            if (success && context.mounted) {
+              context.go('/owner/dashboard');
+              return true;
+            }
+            return false;
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/admin/login',
+        name: 'admin_login_alias',
+        builder: (context, state) => AdminLoginPage(
+          onLogin: (username, password, rememberMe) async {
+            final success = await ref
+                .read(authControllerProvider.notifier)
+                .adminSignIn(username, password, rememberMe);
+            if (success && context.mounted) {
+              context.go('/owner/dashboard');
+              return true;
+            }
+            return false;
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/landing',
         name: 'landing',
         builder: (context, state) => const LandingScreen(),
       ),
@@ -75,46 +141,6 @@ class SplashScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class OwnerDashboardScreen extends StatelessWidget {
-  const OwnerDashboardScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Owner / Admin Dashboard'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => context.go('/login'),
-          ),
-        ],
-      ),
-      body: const Center(child: Text('Owner Analytics & Management Dashboard')),
-    );
-  }
-}
-
-class CashierPosScreen extends StatelessWidget {
-  const CashierPosScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Cashier / POS Terminal'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => context.go('/login'),
-          ),
-        ],
-      ),
-      body: const Center(child: Text('Cashier Touchscreen POS')),
     );
   }
 }
