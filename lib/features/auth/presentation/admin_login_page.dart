@@ -205,7 +205,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         const SizedBox(height: 8),
                         TextField(
                           controller: _usernameController,
-                          style: const TextStyle(color: AppTheme.darkText),
+                          cursorColor: AppTheme.primaryMaroon,
+                          style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
                           decoration: _inputDecoration(
                             hint: 'Enter your username or email',
                             icon: Icons.person_outline,
@@ -225,8 +226,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         const SizedBox(height: 8),
                         TextField(
                           controller: _passwordController,
+                          cursorColor: AppTheme.primaryMaroon,
                           obscureText: _obscurePassword,
-                          style: const TextStyle(color: AppTheme.darkText),
+                          style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
                           decoration: _inputDecoration(
                             hint: 'Enter your password',
                             icon: Icons.lock_outline,
@@ -284,22 +286,23 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                         if (_errorMessage != null) ...[
                           const SizedBox(height: 16),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                             decoration: BoxDecoration(
-                              color: AppTheme.softMaroon,
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
+                              color: const Color(0xFFFDE8E8),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0xFFF8B4B4)),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 16),
-                                const SizedBox(width: 8),
+                                const Icon(Icons.error_outline_rounded, color: Color(0xFF9B1C1C), size: 18),
+                                const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
                                     _errorMessage!,
                                     style: const TextStyle(
-                                      color: AppTheme.errorColor,
-                                      fontSize: 12,
+                                      color: Color(0xFF9B1C1C),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ),

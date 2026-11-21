@@ -2,90 +2,116 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
-  // Food Studio / Premium Dark Theme Palette
-  static const Color darkBg = Color(0xFF0D0D0D);
-  static const Color cardBg = Color(0xFF181818);
-  static const Color surfaceBg = Color(0xFF222222);
-  static const Color primaryRed = Color(0xFFE50914);
-  static const Color accentRed = Color(0xFFFF1E1E);
-  static const Color borderDark = Color(0xFF2C2C2C);
-  static const Color textWhite = Color(0xFFFFFFFF);
-  static const Color textMuted = Color(0xFF9E9E9E);
-  static const Color errorColor = Color(0xFFE53935);
+  // Client Recommended Signature Palette:
+  // 60% White (#FFFFFF) - Background & Surfaces
+  // 30% Maroon (#800020) - Header, Primary Buttons, Navigation
+  // 10% Champagne Gold (#D4AF37) - Highlights, Badges, Ratings, Accents
+  static const Color background = Color(0xFFFFFFFF);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color primaryMaroon = Color(0xFF800020);
+  static const Color champagneGold = Color(0xFFD4AF37);
+  
+  static const Color deepMaroon = Color(0xFF5C0017);
+  static const Color lightMaroon = Color(0xFF990026);
+  static const Color softMaroon = Color(0xFFFBF4F5);
+  static const Color borderMaroon = Color(0xFFE2C4C9);
+  static const Color darkText = Color(0xFF1A1A1A);
+  static const Color mutedText = Color(0xFF6E6A75);
+  static const Color errorColor = Color(0xFFD32F2F);
 
   // Compatibility aliases
-  static const Color primaryMaroon = primaryRed;
-  static const Color deepMaroon = Color(0xFF5A0000);
-  static const Color lightMaroon = Color(0xFFA01818);
-  static const Color softMaroon = Color(0xFF331416);
-  static const Color borderMaroon = borderDark;
-  static const Color background = darkBg;
-  static const Color surface = cardBg;
-  static const Color darkText = textWhite;
-  static const Color mutedText = textMuted;
-
-  static const Color primaryPink = primaryRed;
+  static const Color primaryRed = primaryMaroon;
+  static const Color accentRed = primaryMaroon;
+  static const Color cardBg = surface;
+  static const Color darkBg = background;
+  static const Color surfaceBg = surface;
+  static const Color borderDark = borderMaroon;
+  static const Color textWhite = darkText;
+  static const Color textMuted = mutedText;
+  static const Color primaryPink = primaryMaroon;
   static const Color softPink = softMaroon;
 
-  static ThemeData get darkTheme {
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
-        seedColor: primaryRed,
-        brightness: Brightness.dark,
-        primary: primaryRed,
-        surface: cardBg,
+        seedColor: primaryMaroon,
+        brightness: Brightness.light,
+        primary: primaryMaroon,
+        secondary: champagneGold,
+        surface: surface,
         error: errorColor,
       ),
-      scaffoldBackgroundColor: darkBg,
-      textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme).copyWith(
+      scaffoldBackgroundColor: background,
+      textTheme: GoogleFonts.interTextTheme(ThemeData.light().textTheme).copyWith(
         displayLarge: GoogleFonts.plusJakartaSans(
-          color: textWhite,
+          color: darkText,
           fontWeight: FontWeight.bold,
         ),
         displayMedium: GoogleFonts.plusJakartaSans(
-          color: textWhite,
+          color: darkText,
           fontWeight: FontWeight.bold,
         ),
         headlineLarge: GoogleFonts.plusJakartaSans(
-          color: textWhite,
+          color: darkText,
           fontWeight: FontWeight.bold,
         ),
         headlineMedium: GoogleFonts.plusJakartaSans(
-          color: textWhite,
+          color: darkText,
           fontWeight: FontWeight.bold,
         ),
         titleLarge: GoogleFonts.plusJakartaSans(
-          color: textWhite,
+          color: darkText,
           fontWeight: FontWeight.w600,
         ),
-        bodyLarge: GoogleFonts.inter(color: textWhite),
-        bodyMedium: GoogleFonts.inter(color: textWhite),
-        bodySmall: GoogleFonts.inter(color: textMuted),
+        bodyLarge: GoogleFonts.inter(color: darkText),
+        bodyMedium: GoogleFonts.inter(color: darkText),
+        bodySmall: GoogleFonts.inter(color: mutedText),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        fillColor: surface,
+        hintStyle: const TextStyle(color: mutedText, fontSize: 14),
+        labelStyle: const TextStyle(color: darkText, fontSize: 14),
+        prefixIconColor: primaryMaroon,
+        suffixIconColor: mutedText,
+        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: borderMaroon, width: 1),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: borderMaroon, width: 1),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: const BorderSide(color: primaryMaroon, width: 1.8),
+        ),
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: darkBg,
-        foregroundColor: textWhite,
+        backgroundColor: primaryMaroon,
+        foregroundColor: Colors.white,
         elevation: 0,
         centerTitle: false,
         titleTextStyle: GoogleFonts.plusJakartaSans(
-          color: textWhite,
+          color: Colors.white,
           fontSize: 18,
           fontWeight: FontWeight.bold,
         ),
       ),
       cardTheme: CardThemeData(
-        color: cardBg,
-        elevation: 4,
+        color: surface,
+        elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: const BorderSide(color: borderDark, width: 1),
+          side: const BorderSide(color: borderMaroon, width: 1),
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryRed,
+          backgroundColor: primaryMaroon,
           foregroundColor: Colors.white,
           textStyle: GoogleFonts.plusJakartaSans(
             fontWeight: FontWeight.bold,
@@ -100,6 +126,5 @@ class AppTheme {
     );
   }
 
-  // Keep lightTheme as fallback
-  static ThemeData get lightTheme => darkTheme;
+  static ThemeData get darkTheme => lightTheme;
 }

@@ -273,12 +273,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                 decoration: BoxDecoration(
                   color: AppTheme.softMaroon,
                   borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppTheme.borderMaroon),
+                  border: Border.all(color: AppTheme.champagneGold, width: 1.2),
                 ),
                 child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.local_fire_department, color: AppTheme.primaryMaroon, size: 16),
+                    Icon(Icons.star_rounded, color: AppTheme.champagneGold, size: 18),
                     SizedBox(width: 6),
                     Text(
                       'PREMIUM MAROON & WHITE BBQ PORTAL',
@@ -425,7 +425,15 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
   Widget _heroFeatureItem(IconData icon, String title, String subtitle) {
     return Row(
       children: [
-        Icon(icon, color: AppTheme.primaryMaroon, size: 20),
+        Container(
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
+            color: AppTheme.softMaroon,
+            shape: BoxShape.circle,
+            border: Border.all(color: AppTheme.champagneGold.withValues(alpha: 0.5)),
+          ),
+          child: Icon(icon, color: AppTheme.primaryMaroon, size: 16),
+        ),
         const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
