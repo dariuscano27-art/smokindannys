@@ -135,37 +135,37 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
       ),
       actions: [
         if (isDesktop) ...[
-          Container(
+          SizedBox(
             width: 220,
             height: 40,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.borderMaroon),
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                const Icon(Icons.search, color: AppTheme.mutedText, size: 16),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: TextField(
-                    controller: _searchController,
-                    style: const TextStyle(color: AppTheme.darkText, fontSize: 12),
-                    decoration: const InputDecoration(
-                      hintText: 'Search ribs, burgers...',
-                      hintStyle: TextStyle(color: AppTheme.mutedText, fontSize: 12),
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
-                    onSubmitted: (val) {
-                      if (val.trim().isNotEmpty) {
-                        context.go('/customer/home');
-                      }
-                    },
-                  ),
+            child: TextField(
+              controller: _searchController,
+              style: const TextStyle(color: AppTheme.darkText, fontSize: 12),
+              decoration: InputDecoration(
+                hintText: 'Search ribs, burgers...',
+                hintStyle: const TextStyle(color: AppTheme.mutedText, fontSize: 12),
+                prefixIcon: const Icon(Icons.search, color: AppTheme.mutedText, size: 16),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: AppTheme.borderMaroon),
                 ),
-              ],
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: AppTheme.borderMaroon),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  borderSide: const BorderSide(color: AppTheme.primaryMaroon, width: 1.5),
+                ),
+              ),
+              onSubmitted: (val) {
+                if (val.trim().isNotEmpty) {
+                  context.go('/customer/home');
+                }
+              },
             ),
           ),
           const SizedBox(width: 12),

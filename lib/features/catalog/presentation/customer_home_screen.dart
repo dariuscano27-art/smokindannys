@@ -343,22 +343,30 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
         Row(
           children: [
             Expanded(
-              child: Container(
+              child: SizedBox(
                 height: 48,
-                decoration: BoxDecoration(
-                  color: AppTheme.surface,
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppTheme.borderMaroon),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: TextField(
                   onChanged: (val) => setState(() => _searchQuery = val),
-                  style: const TextStyle(color: AppTheme.darkText),
-                  decoration: const InputDecoration(
+                  style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
+                  decoration: InputDecoration(
                     hintText: 'Search menu items...',
-                    hintStyle: TextStyle(color: AppTheme.mutedText),
-                    icon: Icon(Icons.search, color: AppTheme.mutedText, size: 20),
-                    border: InputBorder.none,
+                    hintStyle: const TextStyle(color: AppTheme.mutedText, fontSize: 14),
+                    prefixIcon: const Icon(Icons.search, color: AppTheme.mutedText, size: 20),
+                    filled: true,
+                    fillColor: AppTheme.surface,
+                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: AppTheme.borderMaroon),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: AppTheme.borderMaroon),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(24),
+                      borderSide: const BorderSide(color: AppTheme.primaryMaroon, width: 1.8),
+                    ),
                   ),
                 ),
               ),
