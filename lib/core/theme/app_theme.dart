@@ -15,6 +15,8 @@ class AppTheme {
 
   // Compatibility aliases
   static const Color primaryMaroon = primaryRed;
+  static const Color deepMaroon = Color(0xFF5A0000);
+  static const Color lightMaroon = Color(0xFFA01818);
   static const Color softMaroon = Color(0xFF331416);
   static const Color borderMaroon = borderDark;
   static const Color background = darkBg;

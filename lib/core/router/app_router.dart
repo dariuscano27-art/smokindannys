@@ -48,6 +48,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(
         path: '/',
+        name: 'landing',
+        builder: (context, state) => const LandingScreen(),
+      ),
+      GoRoute(
+        path: '/admin/login',
         name: 'admin_login',
         builder: (context, state) => AdminLoginPage(
           onLogin: (username, password, rememberMe) async {
@@ -61,27 +66,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             return false;
           },
         ),
-      ),
-      GoRoute(
-        path: '/admin/login',
-        name: 'admin_login_alias',
-        builder: (context, state) => AdminLoginPage(
-          onLogin: (username, password, rememberMe) async {
-            final success = await ref
-                .read(authControllerProvider.notifier)
-                .adminSignIn(username, password, rememberMe);
-            if (success && context.mounted) {
-              context.go('/owner/dashboard');
-              return true;
-            }
-            return false;
-          },
-        ),
-      ),
-      GoRoute(
-        path: '/landing',
-        name: 'landing',
-        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/login',

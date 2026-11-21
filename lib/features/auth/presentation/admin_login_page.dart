@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import '../../../core/theme/app_theme.dart';
 
 class AdminLoginPage extends StatefulWidget {
   final Future<bool> Function(String username, String password, bool rememberMe) onLogin;
@@ -21,10 +23,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   bool _rememberMe = false;
   bool _isHovered = false;
   String? _errorMessage;
-
-  static const Color red = Color(0xFFED101E);
-  static const Color background = Color(0xFF0B0B0B);
-  static const Color cardColor = Color(0xFF171717);
 
   @override
   void dispose() {
@@ -80,26 +78,26 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }) {
     return InputDecoration(
       hintText: hint,
-      hintStyle: const TextStyle(color: Colors.white38),
-      prefixIcon: Icon(icon, color: Colors.white54, size: 20),
+      hintStyle: const TextStyle(color: AppTheme.mutedText),
+      prefixIcon: Icon(icon, color: AppTheme.primaryMaroon, size: 20),
       suffixIcon: suffix,
       filled: true,
-      fillColor: const Color(0xFF222222),
+      fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(
         horizontal: 16,
         vertical: 17,
       ),
       border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFF333333)),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppTheme.borderMaroon),
       ),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: Color(0xFF333333)),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppTheme.borderMaroon),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(10),
-        borderSide: const BorderSide(color: red, width: 1.5),
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: AppTheme.primaryMaroon, width: 1.8),
       ),
     );
   }
@@ -107,60 +105,70 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: background,
+      backgroundColor: AppTheme.background,
       body: SafeArea(
         child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 430),
-              child: Column(
+          child: ScrollConfiguration(
+            behavior: ScrollConfiguration.of(context).copyWith(scrollbars: false),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 430),
+                child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(
-                    Icons.local_fire_department_rounded,
-                    color: red,
-                    size: 55,
+                  Container(
+                    width: 72,
+                    height: 72,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppTheme.primaryMaroon,
+                      border: Border.all(color: Colors.white, width: 3),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Color(0x33800000),
+                          blurRadius: 12,
+                          offset: Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Icons.admin_panel_settings_rounded, size: 36, color: Colors.white),
                   ),
-
-                  const SizedBox(height: 12),
-
+                  const SizedBox(height: 16),
                   const Text(
                     'SMOKIN DANNYS',
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 27,
+                      fontSize: 24,
                       fontWeight: FontWeight.w900,
-                      letterSpacing: 1.5,
+                      color: AppTheme.primaryMaroon,
+                      letterSpacing: 0.5,
                     ),
                   ),
-
-                  const SizedBox(height: 6),
-
+                  const SizedBox(height: 4),
                   const Text(
                     'BBQ & POS MANAGEMENT SYSTEM',
                     style: TextStyle(
-                      color: Colors.white54,
                       fontSize: 11,
+                      fontWeight: FontWeight.bold,
                       letterSpacing: 2,
+                      color: AppTheme.mutedText,
                     ),
                   ),
-
-                  const SizedBox(height: 35),
+                  const SizedBox(height: 28),
 
                   Container(
                     padding: const EdgeInsets.all(30),
                     decoration: BoxDecoration(
-                      color: cardColor,
+                      color: AppTheme.surface,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: const Color(0xFF303030),
+                        color: AppTheme.borderMaroon,
                       ),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.3),
+                          color: Color(0x0F800000),
                           blurRadius: 25,
-                          offset: const Offset(0, 10),
+                          offset: Offset(0, 10),
                         ),
                       ],
                     ),
@@ -168,64 +176,57 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'Welcome Back!',
+                          'Staff / Owner Portal',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 25,
+                            fontSize: 20,
                             fontWeight: FontWeight.bold,
+                            color: AppTheme.darkText,
                           ),
                         ),
-
-                        const SizedBox(height: 8),
-
+                        const SizedBox(height: 6),
                         const Text(
-                          'Sign in to access your admin dashboard.',
+                          'Sign in to access cashier POS & owner dashboard.',
                           style: TextStyle(
-                            color: Colors.white54,
                             fontSize: 13,
+                            color: AppTheme.mutedText,
                           ),
                         ),
+                        const SizedBox(height: 24),
 
-                        const SizedBox(height: 30),
-
+                        // Username or Email
                         const Text(
                           'Username or Email',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
                             fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.darkText,
                           ),
                         ),
-
-                        const SizedBox(height: 10),
-
+                        const SizedBox(height: 8),
                         TextField(
                           controller: _usernameController,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: AppTheme.darkText),
                           decoration: _inputDecoration(
                             hint: 'Enter your username or email',
                             icon: Icons.person_outline,
                           ),
                         ),
+                        const SizedBox(height: 20),
 
-                        const SizedBox(height: 22),
-
+                        // Password
                         const Text(
                           'Password',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
                             fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppTheme.darkText,
                           ),
                         ),
-
-                        const SizedBox(height: 10),
-
+                        const SizedBox(height: 8),
                         TextField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          style: const TextStyle(color: Colors.white),
-                          onSubmitted: (_) => _signIn(),
+                          style: const TextStyle(color: AppTheme.darkText),
                           decoration: _inputDecoration(
                             hint: 'Enter your password',
                             icon: Icons.lock_outline,
@@ -234,7 +235,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 _obscurePassword
                                     ? Icons.visibility_off_outlined
                                     : Icons.visibility_outlined,
-                                color: Colors.white54,
+                                color: AppTheme.mutedText,
+                                size: 20,
                               ),
                               onPressed: () {
                                 setState(() {
@@ -244,9 +246,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                             ),
                           ),
                         ),
+                        const SizedBox(height: 16),
 
-                        const SizedBox(height: 18),
-
+                        // Remember Me
                         Row(
                           children: [
                             SizedBox(
@@ -254,9 +256,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                               width: 20,
                               child: Checkbox(
                                 value: _rememberMe,
-                                activeColor: red,
+                                activeColor: AppTheme.primaryMaroon,
                                 checkColor: Colors.white,
-                                side: const BorderSide(color: Colors.white38),
+                                side: const BorderSide(color: AppTheme.borderMaroon),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(4),
                                 ),
@@ -267,19 +269,13 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                                 },
                               ),
                             ),
-                            const SizedBox(width: 10),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _rememberMe = !_rememberMe;
-                                });
-                              },
-                              child: const Text(
-                                'Remember Me',
-                                style: TextStyle(
-                                  color: Colors.white70,
-                                  fontSize: 13,
-                                ),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Remember Me',
+                              style: TextStyle(
+                                color: AppTheme.darkText,
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                           ],
@@ -290,19 +286,19 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                             decoration: BoxDecoration(
-                              color: red.withOpacity(0.1),
+                              color: AppTheme.softMaroon,
                               borderRadius: BorderRadius.circular(8),
-                              border: Border.all(color: red.withOpacity(0.3)),
+                              border: Border.all(color: AppTheme.errorColor.withValues(alpha: 0.3)),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.error_outline, color: red, size: 16),
+                                const Icon(Icons.error_outline, color: AppTheme.errorColor, size: 16),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
                                     _errorMessage!,
                                     style: const TextStyle(
-                                      color: red,
+                                      color: AppTheme.errorColor,
                                       fontSize: 12,
                                     ),
                                   ),
@@ -322,13 +318,13 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                             width: double.infinity,
                             height: 50,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(25),
                               boxShadow: _isHovered && !_isLoading
-                                  ? [
+                                  ? const [
                                       BoxShadow(
-                                        color: red.withOpacity(0.4),
+                                        color: Color(0x40800000),
                                         blurRadius: 15,
-                                        offset: const Offset(0, 4),
+                                        offset: Offset(0, 4),
                                       ),
                                     ]
                                   : [],
@@ -336,58 +332,43 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                             child: ElevatedButton(
                               onPressed: _isLoading ? null : _signIn,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: _isHovered ? const Color(0xFFFF2432) : red,
-                                disabledBackgroundColor: Colors.red.shade900,
+                                backgroundColor: AppTheme.primaryMaroon,
                                 foregroundColor: Colors.white,
-                                elevation: 0,
+                                disabledBackgroundColor: AppTheme.deepMaroon,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius: BorderRadius.circular(25),
                                 ),
+                                elevation: 3,
                               ),
                               child: _isLoading
                                   ? const SizedBox(
-                                      height: 22,
                                       width: 22,
+                                      height: 22,
                                       child: CircularProgressIndicator(
-                                        color: Colors.white,
                                         strokeWidth: 2,
+                                        color: Colors.white,
                                       ),
                                     )
                                   : const Text(
-                                      'SIGN IN',
+                                      'SIGN IN TO PORTAL',
                                       style: TextStyle(
+                                        fontSize: 15,
                                         fontWeight: FontWeight.bold,
-                                        letterSpacing: 1,
+                                        letterSpacing: 0.8,
                                       ),
                                     ),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        const Center(
-                          child: Text(
-                            'AUTHORIZED PERSONNEL ONLY',
-                            style: TextStyle(
-                              color: Colors.white38,
-                              fontSize: 10,
-                              letterSpacing: 1.2,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-
-                  const SizedBox(height: 30),
-
-                  const Text(
-                    '© 2026 SMOKIN DANNYS. All rights reserved.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: Colors.white38,
-                      fontSize: 10,
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () => context.go('/'),
+                    child: const Text(
+                      '← Back to Home / Customer Menu',
+                      style: TextStyle(color: AppTheme.mutedText, fontSize: 13, fontWeight: FontWeight.w600),
                     ),
                   ),
                 ],
@@ -396,6 +377,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }

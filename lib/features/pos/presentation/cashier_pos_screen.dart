@@ -12,10 +12,10 @@ class CashierPosScreen extends ConsumerStatefulWidget {
 }
 
 class _CashierPosScreenState extends ConsumerState<CashierPosScreen> {
-  static const Color accentRed = Color(0xFFED101E);
-  static const Color darkBg = Color(0xFF0B0B0B);
-  static const Color cardColor = Color(0xFF171717);
-  static const Color borderDark = Color(0xFF282828);
+  static const Color accentRed = AppTheme.primaryMaroon;
+  static const Color darkBg = AppTheme.background;
+  static const Color cardColor = AppTheme.surface;
+  static const Color borderDark = AppTheme.borderMaroon;
 
   String _selectedCategory = 'All';
 

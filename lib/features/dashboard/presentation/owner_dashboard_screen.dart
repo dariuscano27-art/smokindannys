@@ -14,10 +14,10 @@ class OwnerDashboardScreen extends ConsumerStatefulWidget {
 class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
   int _selectedTab = 0; // 0 = Overview, 1 = Orders, 2 = Inventory, 3 = Analytics
 
-  static const Color accentRed = Color(0xFFED101E);
-  static const Color darkBg = Color(0xFF0B0B0B);
-  static const Color cardColor = Color(0xFF171717);
-  static const Color borderDark = Color(0xFF282828);
+  static const Color accentRed = AppTheme.primaryMaroon;
+  static const Color darkBg = AppTheme.background;
+  static const Color cardColor = AppTheme.surface;
+  static const Color borderDark = AppTheme.borderMaroon;
 
   // Sample order data for demonstration & management
   final List<Map<String, dynamic>> _recentOrders = [
@@ -161,9 +161,9 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: accentRed.withOpacity(0.15),
+                  color: accentRed.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: accentRed.withOpacity(0.3)),
+                  border: Border.all(color: accentRed.withValues(alpha: 0.3)),
                 ),
                 child: const Icon(
                   Icons.local_fire_department_rounded,
@@ -275,9 +275,9 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                 icon: Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.red.withOpacity(0.1),
+                    color: Colors.red.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.withOpacity(0.2)),
+                    border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
                   ),
                   child: const Icon(Icons.logout, color: accentRed, size: 18),
                 ),
@@ -461,7 +461,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                   Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: iconColor.withOpacity(0.12),
+                      color: iconColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(item['icon'] as IconData, color: iconColor, size: 20),
@@ -642,9 +642,9 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
-                          color: statusColor.withOpacity(0.15),
+                          color: statusColor.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: statusColor.withOpacity(0.4)),
+                          border: Border.all(color: statusColor.withValues(alpha: 0.4)),
                         ),
                         child: Text(
                           order['status'],
@@ -733,7 +733,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: accentRed.withOpacity(0.15),
+                color: accentRed.withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Icon(icon, color: accentRed, size: 20),
@@ -808,7 +808,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.15),
+            color: color.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(4),
           ),
           child: Text(
