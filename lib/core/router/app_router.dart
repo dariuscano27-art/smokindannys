@@ -33,7 +33,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     refreshListenable: notifier,
-    initialLocation: '/',
+    initialLocation: '/login',
     redirect: (context, state) {
       final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
       final isGoingToAdminDashboard = state.matchedLocation == '/owner/dashboard' ||
@@ -41,15 +41,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Protect admin dashboard route from unauthenticated users
       if (isGoingToAdminDashboard && !isAdminAuthenticated) {
-        return '/';
+        return '/login';
       }
       return null;
     },
     routes: [
       GoRoute(
         path: '/',
-        name: 'landing',
-        builder: (context, state) => const LandingScreen(),
+        name: 'root_login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
         path: '/admin/login',
@@ -68,11 +73,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
         path: '/signup',
         name: 'signup',
         builder: (context, state) => const SignupScreen(),
@@ -86,6 +86,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/customer/home',
         name: 'customer_home',
         builder: (context, state) => const CustomerHomeScreen(),
+      ),
+      GoRoute(
+        path: '/landing',
+        name: 'landing',
+        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/owner/dashboard',
