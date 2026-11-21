@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'catalog_provider.dart';
 import '../../auth/presentation/auth_provider.dart';
+import '../../cart/presentation/cart_modal.dart';
+import '../../cart/presentation/cart_provider.dart';
+import '../../profile/presentation/customer_profile_modal.dart';
 import '../../../core/theme/app_theme.dart';
 
 class CustomerHomeScreen extends ConsumerStatefulWidget {
@@ -237,80 +240,137 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
             child: const Text('Menu', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 20),
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Shopping Cart coming up')),
-                  );
-                },
-              ),
-              Positioned(
-                right: 6,
-                top: 6,
-                child: Container(
-                  width: 16,
-                  height: 16,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+
+          // Reactive Cart Button with Dynamic Badge
+          Consumer(
+            builder: (context, ref, child) {
+              final cartCount = ref.watch(cartTotalCountProvider);
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                    onPressed: () => showCartModal(context, ref),
                   ),
-                  alignment: Alignment.center,
-                  child: const Text('0', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 9, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
+                  if (cartCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.champagneGold,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$cartCount',
+                          style: const TextStyle(
+                            color: AppTheme.primaryMaroon,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
           const SizedBox(width: 12),
-          Builder(
-            builder: (context) {
-              final user = ref.read(authRepositoryProvider).currentUser;
-              if (user == null) {
-                return TextButton(
+
+          Consumer(
+            builder: (context, ref, child) {
+              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
+                  ref.watch(authRepositoryProvider).currentUser != null;
+
+              if (!isAuthenticated) {
+                return TextButton.icon(
                   onPressed: () => context.push('/login'),
-                  child: const Text('Sign In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  icon: const Icon(Icons.login_rounded, color: Colors.white, size: 18),
+                  label: const Text('Sign In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                 );
               } else {
-                return TextButton(
-                  onPressed: () async {
-                    await ref.read(authRepositoryProvider).signOut();
-                    if (context.mounted) {
-                      setState(() {});
-                      context.go('/login');
-                    }
-                  },
-                  child: const Text('Sign Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                return Row(
+                  children: [
+                    TextButton.icon(
+                      onPressed: () => showCustomerProfileModal(context, ref),
+                      icon: const Icon(Icons.account_circle_outlined, color: Colors.white, size: 20),
+                      label: const Text('Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(width: 8),
+                    TextButton.icon(
+                      onPressed: () => showSignOutConfirmationDialog(context, ref),
+                      icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 18),
+                      label: const Text('Sign Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
                 );
               }
             },
           ),
           const SizedBox(width: 48),
         ] else ...[
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {},
+          // Mobile Actions
+          Consumer(
+            builder: (context, ref, child) {
+              final cartCount = ref.watch(cartTotalCountProvider);
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                    onPressed: () => showCartModal(context, ref),
+                  ),
+                  if (cartCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.champagneGold,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$cartCount',
+                          style: const TextStyle(
+                            color: AppTheme.primaryMaroon,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
-          Builder(
-            builder: (context) {
-              final user = ref.read(authRepositoryProvider).currentUser;
-              if (user == null) {
+          Consumer(
+            builder: (context, ref, child) {
+              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
+                  ref.watch(authRepositoryProvider).currentUser != null;
+
+              if (!isAuthenticated) {
                 return IconButton(
-                  icon: const Icon(Icons.login, color: Colors.white),
+                  icon: const Icon(Icons.login_rounded, color: Colors.white),
                   onPressed: () => context.push('/login'),
                 );
               } else {
-                return IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.white),
-                  onPressed: () async {
-                    await ref.read(authRepositoryProvider).signOut();
-                    if (context.mounted) {
-                      setState(() {});
-                      context.go('/login');
-                    }
-                  },
+                return Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
+                      onPressed: () => showCustomerProfileModal(context, ref),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                      onPressed: () => showSignOutConfirmationDialog(context, ref),
+                    ),
+                  ],
                 );
               }
             },
@@ -466,7 +526,12 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
         final name = item['name'] ?? 'Item';
         final desc = item['description'] ?? 'Delicious meal from Smokin Dannys.';
         final rawPrice = (item['base_price'] ?? item['price'] ?? 29900) as num;
-        final pricePesos = rawPrice > 1000 ? rawPrice / 100 : rawPrice.toDouble();
+        final double pricePesos;
+        if (rawPrice >= 10000) {
+          pricePesos = rawPrice / 100.0;
+        } else {
+          pricePesos = rawPrice.toDouble();
+        }
         final imageUrl = item['image_url'] as String?;
 
         return Container(
@@ -525,25 +590,25 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      final authRepo = ref.read(authRepositoryProvider);
-                      final user = authRepo.currentUser;
-                      if (user == null) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('Please sign in first to add items to your cart.'),
-                            backgroundColor: AppTheme.primaryMaroon,
-                            action: SnackBarAction(
-                              label: 'Sign In',
-                              textColor: Colors.white,
-                              onPressed: () => context.push('/login'),
-                            ),
-                          ),
+                      final isAuthenticated = ref.read(isAdminAuthenticatedProvider) ||
+                          ref.read(authRepositoryProvider).currentUser != null;
+
+                      if (!isAuthenticated) {
+                        AppToast.show(
+                          context,
+                          message: 'Please sign in first to add items to your cart.',
+                          actionLabel: 'Sign In',
+                          onAction: () => context.push('/login'),
                         );
                         context.push('/login');
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Added $name to cart successfully!')),
-                        );
+                        ref.read(cartProvider.notifier).addItem({
+                          'name': name,
+                          'price': pricePesos,
+                          'image_url': imageUrl,
+                          'category': item['category'] ?? 'Main',
+                        });
+                        AppToast.show(context, message: 'Added $name to cart!');
                       }
                     },
                     style: ElevatedButton.styleFrom(

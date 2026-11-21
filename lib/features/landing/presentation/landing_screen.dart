@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/presentation/auth_provider.dart';
+import '../../cart/presentation/cart_modal.dart';
+import '../../cart/presentation/cart_provider.dart';
+import '../../profile/presentation/customer_profile_modal.dart';
 
 class LandingScreen extends ConsumerStatefulWidget {
   const LandingScreen({super.key});
@@ -21,19 +24,15 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
   }
 
   void _checkAuthAndProceed(VoidCallback onAuthenticated) {
-    final authRepo = ref.read(authRepositoryProvider);
-    final user = authRepo.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please sign in first to continue to cart & ordering.'),
-          backgroundColor: AppTheme.primaryMaroon,
-          action: SnackBarAction(
-            label: 'Sign In',
-            textColor: Colors.white,
-            onPressed: () => context.push('/login'),
-          ),
-        ),
+    final isAuthenticated = ref.read(isAdminAuthenticatedProvider) ||
+        ref.read(authRepositoryProvider).currentUser != null;
+
+    if (!isAuthenticated) {
+      AppToast.show(
+        context,
+        message: 'Please sign in first to continue to cart & ordering.',
+        actionLabel: 'Sign In',
+        onAction: () => context.push('/login'),
       );
       context.push('/login');
     } else {
@@ -169,56 +168,160 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 22),
-                onPressed: () {
-                  _checkAuthAndProceed(() {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Your Cart is currently empty.')),
-                    );
-                  });
-                },
-              ),
-              Positioned(
-                right: 4,
-                top: 4,
-                child: Container(
-                  width: 15,
-                  height: 15,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+
+          // Reactive Cart Button with Dynamic Badge
+          Consumer(
+            builder: (context, ref, child) {
+              final cartCount = ref.watch(cartTotalCountProvider);
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 22),
+                    onPressed: () {
+                      _checkAuthAndProceed(() => showCartModal(context, ref));
+                    },
                   ),
-                  alignment: Alignment.center,
-                  child: const Text('0', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 8, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
+                  if (cartCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.champagneGold,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$cartCount',
+                          style: const TextStyle(
+                            color: AppTheme.primaryMaroon,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
           const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () => context.push('/login'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primaryMaroon,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            ),
-            child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+
+          Consumer(
+            builder: (context, ref, child) {
+              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
+                  ref.watch(authRepositoryProvider).currentUser != null;
+
+              if (!isAuthenticated) {
+                return ElevatedButton(
+                  onPressed: () => context.push('/login'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppTheme.primaryMaroon,
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  ),
+                  child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                );
+              } else {
+                return Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () => showCustomerProfileModal(context, ref),
+                      icon: const Icon(Icons.person_pin_rounded, size: 16),
+                      label: const Text('Profile', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.softMaroon,
+                        foregroundColor: AppTheme.primaryMaroon,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => showSignOutConfirmationDialog(context, ref),
+                      icon: const Icon(Icons.logout_rounded, size: 16),
+                      label: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppTheme.primaryMaroon,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
           const SizedBox(width: 24),
         ] else ...[
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              _checkAuthAndProceed(() {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Your Cart is currently empty.')),
+          // Mobile Actions
+          Consumer(
+            builder: (context, ref, child) {
+              final cartCount = ref.watch(cartTotalCountProvider);
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                    onPressed: () {
+                      _checkAuthAndProceed(() => showCartModal(context, ref));
+                    },
+                  ),
+                  if (cartCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.champagneGold,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$cartCount',
+                          style: const TextStyle(
+                            color: AppTheme.primaryMaroon,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
+                  ref.watch(authRepositoryProvider).currentUser != null;
+
+              if (!isAuthenticated) {
+                return IconButton(
+                  icon: const Icon(Icons.login_rounded, color: Colors.white),
+                  onPressed: () => context.push('/login'),
                 );
-              });
+              } else {
+                return Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
+                      onPressed: () => showCustomerProfileModal(context, ref),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                      onPressed: () => showSignOutConfirmationDialog(context, ref),
+                    ),
+                  ],
+                );
+              }
             },
           ),
           const SizedBox(width: 8),
@@ -595,9 +698,14 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                 icon: const Icon(Icons.add_shopping_cart, color: AppTheme.primaryMaroon, size: 16),
                 onPressed: () {
                   _checkAuthAndProceed(() {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Added $name to cart successfully!')),
-                    );
+                    final cleanPrice = double.tryParse(price.replaceAll('₱', '').replaceAll(',', '')) ?? 599.0;
+                    ref.read(cartProvider.notifier).addItem({
+                      'name': name,
+                      'price': cleanPrice,
+                      'image_url': imageUrl,
+                      'category': 'BBQ & Grills',
+                    });
+                    AppToast.show(context, message: 'Added $name to cart!');
                   });
                 },
               ),

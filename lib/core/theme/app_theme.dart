@@ -128,3 +128,57 @@ class AppTheme {
 
   static ThemeData get darkTheme => lightTheme;
 }
+
+class AppToast {
+  static void show(
+    BuildContext context, {
+    required String message,
+    String? actionLabel,
+    VoidCallback? onAction,
+    Color? backgroundColor,
+    Duration duration = const Duration(milliseconds: 2800),
+  }) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final toastWidth = screenWidth > 500 ? 440.0 : screenWidth * 0.9;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        width: toastWidth,
+        elevation: 8,
+        duration: duration,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: const BorderSide(color: AppTheme.champagneGold, width: 1.2),
+        ),
+        backgroundColor: backgroundColor ?? AppTheme.primaryMaroon,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        content: Row(
+          children: [
+            const Icon(Icons.info_outline_rounded, color: Colors.white, size: 20),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
+        ),
+        action: actionLabel != null
+            ? SnackBarAction(
+                label: actionLabel,
+                textColor: AppTheme.champagneGold,
+                onPressed: onAction ?? () {},
+              )
+            : null,
+      ),
+    );
+  }
+}

@@ -36,6 +36,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      AppToast.show(context, message: 'Signed in successfully! Welcome back.');
+
       final authRepo = ref.read(authRepositoryProvider);
       final user = authRepo.currentUser;
       if (!mounted) return;
