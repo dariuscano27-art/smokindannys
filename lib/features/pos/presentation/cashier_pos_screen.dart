@@ -93,6 +93,7 @@ class _CashierPosScreenState extends ConsumerState<CashierPosScreen> {
             onPressed: () async {
               await ref.read(authControllerProvider.notifier).adminSignOut();
               if (!mounted) return;
+              if (!context.mounted) return;
               context.go('/');
             },
           ),
@@ -421,6 +422,7 @@ class _CashierPosScreenState extends ConsumerState<CashierPosScreen> {
             onPressed: () async {
               await ref.read(authControllerProvider.notifier).adminSignOut();
               if (!mounted) return;
+              if (!context.mounted) return;
               context.go('/');
             },
             icon: const Icon(Icons.logout),
