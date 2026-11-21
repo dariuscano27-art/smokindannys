@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/admin_login_page.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
-import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/terms_screen.dart';
 import '../../features/catalog/presentation/customer_home_screen.dart';
 import '../../features/dashboard/presentation/owner_dashboard_screen.dart';
@@ -71,11 +70,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             return false;
           },
         ),
-      ),
-      GoRoute(
-        path: '/signup',
-        name: 'signup',
-        builder: (context, state) => const SignupScreen(),
       ),
       GoRoute(
         path: '/terms',

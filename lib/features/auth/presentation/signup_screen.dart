@@ -1,11 +1,13 @@
+// Sign Up removed per user request. Only Log In is active.
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
 
 class SignupScreen extends StatelessWidget {
   const SignupScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const LoginScreen(initialTab: 1);
+    return const Scaffold(
+      body: Center(child: Text('Sign up is disabled.')),
+    );
   }
 }
