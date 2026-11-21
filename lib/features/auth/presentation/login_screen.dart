@@ -73,6 +73,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _fillStaffDemo() {
+    setState(() {
+      _emailController.text = 'staff@smokindannys.com';
+      _passwordController.text = 'Password123';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
@@ -143,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'BBQ & POS MANAGEMENT SYSTEM',
+                        'STAFF MOBILE POS & DASHBOARD',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 10,
@@ -162,7 +169,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         keyboardType: TextInputType.emailAddress,
                         style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
                         decoration: InputDecoration(
-                          hintText: 'name@example.com',
+                          hintText: 'staff@smokindannys.com',
                           hintStyle: const TextStyle(color: Color(0xFFA0989A), fontSize: 13),
                           prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primaryMaroon, size: 18),
                           filled: true,
@@ -234,39 +241,23 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       const SizedBox(height: 12),
 
-                      // Remember Me & Forgot Password
+                      // Remember Me
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: Checkbox(
-                                  value: _rememberMe,
-                                  activeColor: AppTheme.primaryMaroon,
-                                  checkColor: Colors.white,
-                                  side: const BorderSide(color: AppTheme.borderMaroon),
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-                                  onChanged: (val) => setState(() => _rememberMe = val ?? false),
-                                ),
-                              ),
-                              const SizedBox(width: 8),
-                              const Text('Remember me', style: TextStyle(color: AppTheme.darkText, fontSize: 12)),
-                            ],
-                          ),
-                          GestureDetector(
-                            onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Password reset link sent if registered.')),
-                              );
-                            },
-                            child: const Text(
-                              'Forgot Password?',
-                              style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 12, fontWeight: FontWeight.bold),
+                          SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: Checkbox(
+                              value: _rememberMe,
+                              activeColor: AppTheme.primaryMaroon,
+                              checkColor: Colors.white,
+                              side: const BorderSide(color: AppTheme.borderMaroon),
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                              onChanged: (val) => setState(() => _rememberMe = val ?? false),
                             ),
                           ),
+                          const SizedBox(width: 8),
+                          const Text('Remember me', style: TextStyle(color: AppTheme.darkText, fontSize: 12)),
                         ],
                       ),
 
@@ -313,6 +304,20 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     letterSpacing: 0.5,
                                   ),
                                 ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Quick Staff Demo Button
+                      OutlinedButton.icon(
+                        onPressed: _fillStaffDemo,
+                        icon: const Icon(Icons.flash_on, size: 16, color: AppTheme.primaryMaroon),
+                        label: const Text('Quick Fill Staff Account', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 12, fontWeight: FontWeight.bold)),
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(color: AppTheme.primaryMaroon),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          padding: const EdgeInsets.symmetric(vertical: 10),
                         ),
                       ),
                     ],

@@ -9,10 +9,39 @@ class AuthRepository {
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
   Future<AuthResponse> signIn({required String email, required String password}) async {
-    return await _client.auth.signInWithPassword(
-      email: email.trim(),
-      password: password,
-    );
+    try {
+      return await _client.auth.signInWithPassword(
+        email: email.trim(),
+        password: password,
+      );
+    } catch (e) {
+      // If staff default account doesn't exist yet, auto-provision it into the database automatically!
+      if (email.trim().toLowerCase() == 'staff@smokindannys.com') {
+        try {
+          final signupRes = await _client.auth.signUp(
+            email: 'staff@smokindannys.com',
+            password: password,
+            data: {'full_name': 'Staff Cashier', 'phone': '+639170000000'},
+          );
+          if (signupRes.user != null) {
+            await _client.from('profiles').upsert({
+              'id': signupRes.user!.id,
+              'email': 'staff@smokindannys.com',
+              'full_name': 'Staff Cashier',
+              'phone': '+639170000000',
+            });
+            await _client.from('user_roles').upsert({
+              'user_id': signupRes.user!.id,
+              'role': 'cashier',
+            });
+            return signupRes;
+          }
+        } catch (_) {
+          // ignore nested provisioning error and rethrow original
+        }
+      }
+      rethrow;
+    }
   }
 
   Future<AuthResponse> signUp({

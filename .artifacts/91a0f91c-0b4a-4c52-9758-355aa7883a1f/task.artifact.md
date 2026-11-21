@@ -7,7 +7,7 @@
 - `[x]` Phase 5: Live Supabase Backend Connection (`https://ngwxonkfjzsmibwdmpmx.supabase.co`) & GitHub Sync.
 - `[x]` Phase 6: Staff Mobile POS & Dashboard App Optimization (Dedicated Android Mobile App UI matching the Chrome desktop theme, touch-friendly POS grid, live orders queue, and staff profile with zero analysis errors).
 - `[x]` Phase 7: Layout & Pixel Overflow Optimization (Refactored `LandingScreen` and menu grid to use responsive `GridView` containers, removing all horizontal and vertical pixel overflow issues).
-- `[x]` Phase 8: Direct Login Page Startup (`app_router.dart` configured to open directly to the `LoginScreen` featuring the Smokin Dannys logo and pristine maroon/white layout).
+- `[x]` Phase 8: Login-Only Application Startup (Removed Sign Up page entirely. App opens directly to a clean, centered Login screen featuring the Smokin Dannys logo, email/password inputs, and zero pixel overflow).
 - `[ ]` Phase 9: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
 - `[ ]` Phase 10: Owner Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
 - `[ ]` Phase 11: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
