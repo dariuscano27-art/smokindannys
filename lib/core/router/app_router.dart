@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,23 +33,29 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     refreshListenable: notifier,
-    initialLocation: '/login',
+    initialLocation: kIsWeb ? '/' : '/admin/login',
     redirect: (context, state) {
       final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
       final isGoingToAdminDashboard = state.matchedLocation == '/owner/dashboard' ||
-          state.matchedLocation == '/admin/dashboard';
+          state.matchedLocation == '/admin/dashboard' ||
+          state.matchedLocation == '/cashier/pos';
+
+      // On mobile app (non-web), enforce staff POS & admin portal exclusively
+      if (!kIsWeb && !isAdminAuthenticated && state.matchedLocation != '/admin/login') {
+        return '/admin/login';
+      }
 
       // Protect admin dashboard route from unauthenticated users
       if (isGoingToAdminDashboard && !isAdminAuthenticated) {
-        return '/login';
+        return '/admin/login';
       }
       return null;
     },
     routes: [
       GoRoute(
         path: '/',
-        name: 'root_login',
-        builder: (context, state) => const LoginScreen(),
+        name: 'landing',
+        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/login',
@@ -82,11 +89,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const CustomerHomeScreen(),
       ),
       GoRoute(
-        path: '/landing',
-        name: 'landing',
-        builder: (context, state) => const LandingScreen(),
-      ),
-      GoRoute(
         path: '/owner/dashboard',
         name: 'owner_dashboard',
         builder: (context, state) => const OwnerDashboardScreen(),
@@ -118,7 +120,7 @@ class SplashScreen extends StatelessWidget {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: () => context.go('/login'),
+              onPressed: () => context.go('/'),
               child: const Text('Get Started'),
             ),
           ],

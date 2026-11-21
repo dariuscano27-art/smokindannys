@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
-import '../../auth/data/auth_repository.dart';
 import '../../auth/presentation/auth_provider.dart';
 
 void showCustomerProfileModal(BuildContext context, WidgetRef ref) {
@@ -92,8 +91,9 @@ class _CustomerProfileDialogState extends ConsumerState<_CustomerProfileDialog> 
   @override
   void initState() {
     super.initState();
-    final user = ref.read(authRepositoryProvider).currentUser;
-    final fullName = user?.userMetadata?['full_name'] ?? 'David Cruz Johnson';
+    final authRepo = ref.read(authRepositoryProvider);
+    final currentUser = authRepo.currentUser;
+    final fullName = currentUser?.userMetadata?['full_name'] ?? 'David Cruz Johnson';
 
     final parts = fullName.trim().split(' ');
     String first = 'David';
@@ -117,8 +117,8 @@ class _CustomerProfileDialogState extends ConsumerState<_CustomerProfileDialog> 
     _firstNameController = TextEditingController(text: first);
     _middleNameController = TextEditingController(text: middle);
     _surnameController = TextEditingController(text: last);
-    _emailController = TextEditingController(text: user?.email ?? 'customer@smokindannys.com');
-    _phoneController = TextEditingController(text: user?.userMetadata?['phone'] ?? '09123456789');
+    _emailController = TextEditingController(text: currentUser?.email ?? 'customer@smokindannys.com');
+    _phoneController = TextEditingController(text: currentUser?.userMetadata?['phone'] ?? '09123456789');
     _addressController = TextEditingController(text: '123 Main St, Quezon City');
 
     _updateInitials(first, last);

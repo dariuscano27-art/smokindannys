@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import 'cart_provider.dart';
 
@@ -60,9 +59,9 @@ class _MultiStepCheckoutSheet extends ConsumerStatefulWidget {
 class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet> {
   int _currentStep = 0; // 0 = Cart, 1 = Review Order, 2 = Payment & Checkout, 3 = Receipt
 
-  String _diningOption = 'Delivery'; // Default for Customer Online Ordering!
+  String _diningOption = 'Pickup'; // Default to Pickup (No delivery riders)
   String _selectedPayment = 'GCash'; // 'GCash', 'Cash', 'Card'
-  final _tableOrAddressController = TextEditingController(text: '123 Main St, Quezon City');
+  final _tableOrAddressController = TextEditingController(text: 'Counter Pickup');
   final _phoneController = TextEditingController(text: '09123456789');
   final _notesController = TextEditingController();
   String _confirmedOrderId = '#SD-1049';
@@ -101,7 +100,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
   }
 
   Widget _buildHeader(BuildContext context, int totalCount) {
-    final stepTitles = ['YOUR SHOPPING CART', 'REVIEW ONLINE ORDER', 'CHECKOUT & PAYMENT', 'ORDER CONFIRMED'];
+    final stepTitles = ['YOUR SHOPPING CART', 'REVIEW YOUR ORDER', 'CHECKOUT & PAYMENT', 'ORDER CONFIRMED'];
     return Container(
       height: 70,
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -252,97 +251,97 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
   }
 
   Widget _buildStep0CartList(List<CartItem> cartItems, double totalPrice) {
-    return Column(
-      children: [
-        Expanded(
-          child: ListView.separated(
-            padding: const EdgeInsets.all(20),
-            itemCount: cartItems.length,
-            separatorBuilder: (context, index) => const Divider(height: 24, color: AppTheme.borderMaroon),
-            itemBuilder: (context, index) {
-              final item = cartItems[index];
-              return _buildCartItemTile(item);
-            },
-          ),
-        ),
+    return SingleChildScrollView(
+      key: const ValueKey('step0_cart'),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        children: [
+          ...cartItems.map((item) => Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: _buildCartItemTile(item),
+              )),
+          const SizedBox(height: 20),
 
-        // Cart Summary Footer
-        Container(
-          padding: const EdgeInsets.all(20),
-          decoration: const BoxDecoration(
-            color: AppTheme.softMaroon,
-            border: Border(top: BorderSide(color: AppTheme.borderMaroon)),
-          ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Subtotal', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-                  Text('₱${totalPrice.toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 13)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Estimated Delivery / Tax', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-                  Text('FREE', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13)),
-                ],
-              ),
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                child: Divider(color: AppTheme.borderMaroon),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text('Grand Total', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.w900)),
-                  Text(
-                    '₱${totalPrice.toStringAsFixed(2)}',
-                    style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 20, fontWeight: FontWeight.w900),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
-                  onPressed: () => setState(() => _currentStep = 1),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryMaroon,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-                  ),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text('PROCEED TO REVIEW ORDER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.5)),
-                      SizedBox(width: 8),
-                      Icon(Icons.arrow_forward_rounded, size: 18),
-                    ],
+          // Cart Summary Footer Card
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: AppTheme.softMaroon,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppTheme.borderMaroon),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Subtotal', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
+                    Text('₱${totalPrice.toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Estimated Tax', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
+                    Text('FREE', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 13)),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Divider(color: AppTheme.borderMaroon),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Grand Total', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.w900)),
+                    Text(
+                      '₱${totalPrice.toStringAsFixed(2)}',
+                      style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 20, fontWeight: FontWeight.w900),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton(
+                    onPressed: () => setState(() => _currentStep = 1),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryMaroon,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+                    ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('PROCEED TO REVIEW ORDER', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, letterSpacing: 0.5)),
+                        SizedBox(width: 8),
+                        Icon(Icons.arrow_forward_rounded, size: 18),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildStep1ReviewOrder(List<CartItem> cartItems, double totalPrice) {
     return SingleChildScrollView(
+      key: const ValueKey('step1_review'),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Order Type Selection (Delivery default for Online Ordering)
-          const Text('1. SELECT ONLINE ORDER TYPE', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)),
+          // Order Type Selection (Pickup default, no delivery riders)
+          const Text('1. SELECT ORDER TYPE', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 13, letterSpacing: 0.5)),
           const SizedBox(height: 10),
           Row(
-            children: ['Delivery', 'Takeout', 'Dine-In'].map((type) {
+            children: ['Pickup', 'Dine-In'].map((type) {
               final isSelected = _diningOption == type;
               return Expanded(
                 child: Padding(
@@ -350,8 +349,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
                   child: InkWell(
                     onTap: () => setState(() {
                       _diningOption = type;
-                      if (type == 'Delivery') _tableOrAddressController.text = '123 Main St, Quezon City';
-                      if (type == 'Takeout') _tableOrAddressController.text = 'Takeout Pickup Counter';
+                      if (type == 'Pickup') _tableOrAddressController.text = 'Counter Pickup';
                       if (type == 'Dine-In') _tableOrAddressController.text = 'Table 4';
                     }),
                     borderRadius: BorderRadius.circular(12),
@@ -380,13 +378,9 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
 
           const SizedBox(height: 20),
 
-          // Address / Table / Ref Input
+          // Pickup Reference or Table Input
           Text(
-            _diningOption == 'Delivery'
-                ? 'Delivery Address & Landmark *'
-                : _diningOption == 'Takeout'
-                    ? 'Pickup Reference Name *'
-                    : 'Table Number *',
+            _diningOption == 'Pickup' ? 'Pickup Reference / Customer Name *' : 'Table Number *',
             style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 13),
           ),
           const SizedBox(height: 6),
@@ -394,13 +388,9 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
             controller: _tableOrAddressController,
             style: const TextStyle(color: AppTheme.darkText, fontSize: 13),
             decoration: InputDecoration(
-              hintText: 'Enter address or details',
+              hintText: _diningOption == 'Pickup' ? 'e.g. Juan Dela Cruz' : 'e.g. Table 4',
               prefixIcon: Icon(
-                _diningOption == 'Delivery'
-                    ? Icons.location_on_outlined
-                    : _diningOption == 'Takeout'
-                        ? Icons.shopping_bag_outlined
-                        : Icons.table_restaurant,
+                _diningOption == 'Pickup' ? Icons.shopping_bag_outlined : Icons.table_restaurant,
                 color: AppTheme.primaryMaroon,
                 size: 18,
               ),
@@ -505,11 +495,12 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
   Widget _buildStep2PaymentCheckout(List<CartItem> cartItems, double totalPrice) {
     final paymentMethods = [
       {'id': 'GCash', 'title': 'GCash / e-Wallet', 'icon': Icons.account_balance_wallet_outlined},
-      {'id': 'Cash', 'title': 'Cash on Delivery / Counter', 'icon': Icons.payments_outlined},
+      {'id': 'Cash', 'title': 'Cash on Counter / Store Pickup', 'icon': Icons.payments_outlined},
       {'id': 'Card', 'title': 'Credit / Debit Card', 'icon': Icons.credit_card_outlined},
     ];
 
     return SingleChildScrollView(
+      key: const ValueKey('step2_payment'),
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,28 +510,34 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
 
           ...paymentMethods.map((method) {
             final isSelected = _selectedPayment == method['id'];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: isSelected ? AppTheme.softMaroon : AppTheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isSelected ? AppTheme.primaryMaroon : AppTheme.borderMaroon, width: isSelected ? 1.8 : 1),
-              ),
-              child: RadioListTile<String>(
-                value: method['id'] as String,
-                groupValue: _selectedPayment,
-                activeColor: AppTheme.primaryMaroon,
-                title: Row(
+            return InkWell(
+              onTap: () => setState(() => _selectedPayment = method['id'] as String),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.softMaroon : AppTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: isSelected ? AppTheme.primaryMaroon : AppTheme.borderMaroon, width: isSelected ? 1.8 : 1),
+                ),
+                child: Row(
                   children: [
                     Icon(method['icon'] as IconData, color: AppTheme.primaryMaroon, size: 20),
                     const SizedBox(width: 12),
-                    Text(
-                      method['title'] as String,
-                      style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 13),
+                    Expanded(
+                      child: Text(
+                        method['title'] as String,
+                        style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 13),
+                      ),
+                    ),
+                    Icon(
+                      isSelected ? Icons.radio_button_checked_rounded : Icons.radio_button_off_rounded,
+                      color: isSelected ? AppTheme.primaryMaroon : AppTheme.mutedText,
+                      size: 20,
                     ),
                   ],
                 ),
-                onChanged: (val) => setState(() => _selectedPayment = val!),
               ),
             );
           }),
@@ -569,7 +566,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text('Reference / Address', style: TextStyle(color: AppTheme.mutedText, fontSize: 12)),
+                    const Text('Pickup Reference', style: TextStyle(color: AppTheme.mutedText, fontSize: 12)),
                     Text(_tableOrAddressController.text, style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 12)),
                   ],
                 ),
@@ -616,7 +613,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                 elevation: 3,
               ),
-              child: const Text('PLACE ONLINE ORDER NOW', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1)),
+              child: const Text('PLACE PICKUP ORDER NOW', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, letterSpacing: 1)),
             ),
           ),
         ],
@@ -626,6 +623,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
 
   Widget _buildStep3Receipt() {
     return SingleChildScrollView(
+      key: const ValueKey('step3_receipt'),
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
@@ -640,7 +638,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
           ),
           const SizedBox(height: 16),
           const Text(
-            'ONLINE ORDER PLACED!',
+            'PICKUP ORDER PLACED!',
             textAlign: TextAlign.center,
             style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 18, fontWeight: FontWeight.w900, letterSpacing: 0.5),
           ),
@@ -662,7 +660,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
               children: [
                 _receiptRow('Status', 'Sent to Kitchen Queue 👨‍🍳', isGreen: true),
                 _receiptRow('Order Type', _diningOption),
-                _receiptRow('Address / Ref', _tableOrAddressController.text),
+                _receiptRow('Pickup Ref', _tableOrAddressController.text),
                 _receiptRow('Contact Phone', _phoneController.text),
                 _receiptRow('Payment Method', _selectedPayment),
               ],
@@ -714,6 +712,7 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
 
   Widget _buildEmptyCart() {
     return Center(
+      key: const ValueKey('empty_cart'),
       child: Padding(
         padding: const EdgeInsets.all(32.0),
         child: Column(
