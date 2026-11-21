@@ -67,7 +67,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                     const SizedBox(height: 50),
                     _buildCategoryBar(context),
                     const SizedBox(height: 50),
-                    _buildPopularSection(context),
+                    _buildPopularSection(context, isDesktop),
                     const SizedBox(height: 60),
                     _buildFooter(context),
                   ],
@@ -344,12 +344,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                 ],
               ),
               const SizedBox(height: 40),
-              Row(
+              Wrap(
+                spacing: 24,
+                runSpacing: 12,
                 children: [
                   _heroFeatureItem(Icons.flash_on, 'Delivery or pickup', 'Choose what suits you'),
-                  const SizedBox(width: 24),
                   _heroFeatureItem(Icons.eco, 'Fresh ingredients', 'Prepared with care'),
-                  const SizedBox(width: 24),
                   _heroFeatureItem(Icons.local_fire_department, 'Cooked to order', 'Made for your meal'),
                 ],
               ),
@@ -424,6 +424,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
 
   Widget _heroFeatureItem(IconData icon, String title, String subtitle) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           padding: const EdgeInsets.all(6),
@@ -505,7 +506,14 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
     );
   }
 
-  Widget _buildPopularSection(BuildContext context) {
+  Widget _buildPopularSection(BuildContext context, bool isDesktop) {
+    final items = [
+      {'name': 'The Ultimate Rib', 'price': '₱599.00', 'image': 'Menu_Food_Photos/01_The_Ultimate_Rib.jpg'},
+      {'name': 'Trio Baby Back Ribs', 'price': '₱899.00', 'image': 'Menu_Food_Photos/02_Trio_Baby_Back_Ribs.jpg'},
+      {'name': 'Ultimate BBQ Platter', 'price': '₱1,199.00', 'image': 'Menu_Food_Photos/03_Ultimate_BBQ_Platter.jpg'},
+      {'name': 'Pizza & Pasta Sisig', 'price': '₱399.00', 'image': 'Menu_Food_Photos/06_Pizza_and_Pasta_Sisig.jpg'},
+    ];
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -531,16 +539,20 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(child: _menuItemCard(context, 'The Ultimate Rib', '₱599.00', 'Menu_Food_Photos/01_The_Ultimate_Rib.jpg')),
-            const SizedBox(width: 16),
-            Expanded(child: _menuItemCard(context, 'Trio Baby Back Ribs', '₱899.00', 'Menu_Food_Photos/02_Trio_Baby_Back_Ribs.jpg')),
-            const SizedBox(width: 16),
-            Expanded(child: _menuItemCard(context, 'Ultimate BBQ Platter', '₱1,199.00', 'Menu_Food_Photos/03_Ultimate_BBQ_Platter.jpg')),
-            const SizedBox(width: 16),
-            Expanded(child: _menuItemCard(context, 'Pizza & Pasta Sisig', '₱399.00', 'Menu_Food_Photos/06_Pizza_and_Pasta_Sisig.jpg')),
-          ],
+        GridView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: isDesktop ? 4 : 2,
+            childAspectRatio: 0.78,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+          ),
+          itemCount: items.length,
+          itemBuilder: (context, index) {
+            final item = items[index];
+            return _menuItemCard(context, item['name']!, item['price']!, item['image']!);
+          },
         ),
       ],
     );
@@ -548,7 +560,6 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
 
   Widget _menuItemCard(BuildContext context, String name, String price, String imageUrl) {
     return Container(
-      height: 280,
       decoration: BoxDecoration(
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(20),
@@ -572,13 +583,15 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.darkText, fontSize: 14, fontWeight: FontWeight.bold)),
+          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(price, style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 14, fontWeight: FontWeight.w900)),
+              Text(price, style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 13, fontWeight: FontWeight.w900)),
               IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
                 icon: const Icon(Icons.add_shopping_cart, color: AppTheme.primaryMaroon, size: 16),
                 onPressed: () {
                   _checkAuthAndProceed(() {
