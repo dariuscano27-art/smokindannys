@@ -4,11 +4,12 @@
 - `[x]` Phase 2: Authentication & Role-Based Access Control (Supabase Auth, profiles, RLS, protected routes, form validation, terms & conditions).
 - `[x]` Phase 3: Customer Catalog, Search, Sort & Filter (Categories, products, variants, addons, product details, Philippine Pesos currency).
 - `[x]` Phase 4: Supabase Backend Architecture & SQL Migrations Delivery (`20250330000001_initial_schema.sql`, `20250330000002_rls_policies.sql`, `20250330000003_functions_triggers.sql`, `20250330000004_storage_realtime.sql`).
-- `[ ]` Phase 5: Shopping Cart, Review Order, and Checkout workflow (Server-side price validation, subtotal/tax/service charge).
-- `[ ]` Phase 6: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
-- `[ ]` Phase 7: Owner Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
-- `[ ]` Phase 8: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
-- `[ ]` Phase 9: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
-- `[ ]` Phase 10: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
-- `[ ]` Phase 11: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
-- `[ ]` Phase 12: Automated Testing, Security Audit & Client Deployment Preparation.
+- `[x]` Phase 5: Live Supabase Backend Connection (`https://ngwxonkfjzsmibwdmpmx.supabase.co`) & GitHub Sync.
+- `[ ]` Phase 6: Shopping Cart, Review Order, and Checkout workflow (Server-side price validation, subtotal/tax/service charge).
+- `[ ]` Phase 7: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
+- `[ ]` Phase 8: Owner Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
+- `[ ]` Phase 9: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
+- `[ ]` Phase 10: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
+- `[ ]` Phase 11: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
+- `[ ]` Phase 12: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
+- `[ ]` Phase 13: Automated Testing, Security Audit & Client Deployment Preparation.
