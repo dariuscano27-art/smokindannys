@@ -12,60 +12,26 @@ class OwnerDashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
-  int _selectedTab = 0; // 0 = Overview, 1 = Orders, 2 = Inventory, 3 = Analytics
+  int _selectedNavIndex = 0; // 0 to 10 for the 11 Admin Navigation items
 
   static const Color accentRed = AppTheme.primaryMaroon;
   static const Color darkBg = AppTheme.background;
   static const Color cardColor = AppTheme.surface;
   static const Color borderDark = AppTheme.borderMaroon;
 
-  // Sample order data for demonstration & management
-  final List<Map<String, dynamic>> _recentOrders = [
-    {
-      'id': '#SD-1048',
-      'customer': 'Table 4 (Dine-In)',
-      'items': 'Signature Smoked Ribs x2, Iced Tea x2',
-      'total': 898.00,
-      'time': '10 mins ago',
-      'status': 'Completed',
-      'statusColor': Colors.green,
-    },
-    {
-      'id': '#SD-1047',
-      'customer': 'Takeout - Maria Santos',
-      'items': 'Classic Cheeseburger, Crispy Fries',
-      'total': 389.00,
-      'time': '18 mins ago',
-      'status': 'Preparing',
-      'statusColor': Colors.orange,
-    },
-    {
-      'id': '#SD-1046',
-      'customer': 'Table 2 (Dine-In)',
-      'items': 'Margherita Pizza, Creamy Alfredo',
-      'total': 648.00,
-      'time': '25 mins ago',
-      'status': 'Completed',
-      'statusColor': Colors.green,
-    },
-    {
-      'id': '#SD-1045',
-      'customer': 'Delivery - GrabFood #883',
-      'items': 'Crispy Chicken Tenders x3, BBQ Dip',
-      'total': 777.00,
-      'time': '32 mins ago',
-      'status': 'Completed',
-      'statusColor': Colors.green,
-    },
-    {
-      'id': '#SD-1044',
-      'customer': 'Table 8 (Dine-In)',
-      'items': 'Smoked BBQ Pork Platter, Garlic Rice',
-      'total': 1120.00,
-      'time': '45 mins ago',
-      'status': 'Completed',
-      'statusColor': Colors.green,
-    },
+  // Final 11 Admin Navigation Items
+  final List<Map<String, dynamic>> _adminNavItems = [
+    {'title': 'Dashboard Overview', 'icon': Icons.dashboard_rounded},
+    {'title': 'Order Management', 'icon': Icons.receipt_long_rounded},
+    {'title': 'Menu Management', 'icon': Icons.restaurant_menu_rounded},
+    {'title': 'Inventory Management', 'icon': Icons.inventory_2_rounded},
+    {'title': 'Staff Management', 'icon': Icons.badge_rounded},
+    {'title': 'Staff Attendance', 'icon': Icons.access_time_filled_rounded},
+    {'title': 'Payment Management', 'icon': Icons.payments_rounded},
+    {'title': 'Customer Management', 'icon': Icons.people_rounded},
+    {'title': 'Reports and Analytics', 'icon': Icons.bar_chart_rounded},
+    {'title': 'Activity Logs', 'icon': Icons.history_rounded},
+    {'title': 'System Settings', 'icon': Icons.settings_rounded},
   ];
 
   @override
@@ -76,370 +42,270 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     return Scaffold(
       backgroundColor: darkBg,
       body: SafeArea(
-        child: Column(
-          children: [
-            // Admin Navigation Header
-            _buildAdminHeader(context, isDesktop),
-
-            // Dashboard Content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.symmetric(
-                  horizontal: isDesktop ? 32 : 16,
-                  vertical: 24,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Welcome & Quick Action Bar
-                    _buildWelcomeBanner(context, isDesktop),
-
-                    const SizedBox(height: 24),
-
-                    // Metrics Grid (4 Key Metric Cards)
-                    _buildMetricsGrid(isDesktop),
-
-                    const SizedBox(height: 28),
-
-                    // Navigation Tabs & Action Bar
-                    _buildTabNavigation(),
-
-                    const SizedBox(height: 20),
-
-                    // Main Grid: Orders & Activity + Side Panel
-                    if (isDesktop)
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 7,
-                            child: _buildRecentOrdersCard(),
-                          ),
-                          const SizedBox(width: 24),
-                          Expanded(
-                            flex: 4,
-                            child: Column(
-                              children: [
-                                _buildQuickActionsCard(context),
-                                const SizedBox(height: 20),
-                                _buildInventoryAlertsCard(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    else ...[
-                      _buildRecentOrdersCard(),
-                      const SizedBox(height: 20),
-                      _buildQuickActionsCard(context),
-                      const SizedBox(height: 20),
-                      _buildInventoryAlertsCard(),
-                    ],
-                  ],
-                ),
+        child: isDesktop
+            ? Row(
+                children: [
+                  // Left Sidebar Navigation with 11 Items
+                  _buildAdminSidebar(),
+                  Container(width: 1, color: borderDark),
+                  // Main Content View
+                  Expanded(
+                    child: Column(
+                      children: [
+                        _buildAdminHeader(context, isDesktop: true),
+                        Expanded(child: _buildSelectedModuleView()),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : Column(
+                children: [
+                  _buildAdminHeader(context, isDesktop: false),
+                  _buildMobileNavDropdown(),
+                  Expanded(child: _buildSelectedModuleView()),
+                ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
 
-  Widget _buildAdminHeader(BuildContext context, bool isDesktop) {
+  Widget _buildAdminSidebar() {
     return Container(
-      height: 70,
-      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 32 : 16),
-      decoration: const BoxDecoration(
-        color: cardColor,
-        border: Border(bottom: BorderSide(color: borderDark)),
-      ),
-      child: Row(
+      width: 260,
+      color: cardColor,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Brand Logo & Title
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: accentRed.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: accentRed.withValues(alpha: 0.3)),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: accentRed.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(Icons.local_fire_department_rounded, color: accentRed, size: 22),
                 ),
-                child: const Icon(
-                  Icons.local_fire_department_rounded,
-                  color: accentRed,
-                  size: 24,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'SMOKIN DANNYS',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w900,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  Row(
-                    children: [
-                      Container(
-                        width: 6,
-                        height: 6,
-                        decoration: const BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      const Text(
-                        'ADMIN CONTROL CENTER',
-                        style: TextStyle(
-                          color: Colors.white54,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                          letterSpacing: 1,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-
-          const Spacer(),
-
-          // System Mode Badge
-          if (isDesktop) ...[
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-              decoration: BoxDecoration(
-                color: const Color(0xFF222222),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: borderDark),
-              ),
-              child: const Row(
-                children: [
-                  Icon(Icons.check_circle_outline, color: Colors.green, size: 14),
-                  SizedBox(width: 6),
-                  Text(
-                    'POS & Database Connected',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 20),
-          ],
-
-          // Admin User Profile & Sign Out
-          Row(
-            children: [
-              const CircleAvatar(
-                radius: 18,
-                backgroundColor: accentRed,
-                child: Icon(Icons.person, color: Colors.white, size: 20),
-              ),
-              if (isDesktop) ...[
-                const SizedBox(width: 10),
+                const SizedBox(width: 12),
                 const Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Store Owner',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      'admin@smokindannys.com',
-                      style: TextStyle(
-                        color: Colors.white38,
-                        fontSize: 11,
-                      ),
-                    ),
+                    Text('SMOKIN DANNYS', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.w900, fontSize: 15)),
+                    Text('ADMIN CONTROL', style: TextStyle(color: AppTheme.mutedText, fontSize: 10, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
-              const SizedBox(width: 16),
-              IconButton(
-                tooltip: 'Sign Out Administrator',
-                icon: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.red.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.red.withValues(alpha: 0.2)),
+            ),
+          ),
+          const Divider(height: 1, color: borderDark),
+          Expanded(
+            child: ListView.builder(
+              padding: const EdgeInsets.symmetric(vertical: 8),
+              itemCount: _adminNavItems.length,
+              itemBuilder: (context, index) {
+                final item = _adminNavItems[index];
+                final isSelected = _selectedNavIndex == index;
+                return InkWell(
+                  onTap: () => setState(() => _selectedNavIndex = index),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppTheme.softMaroon : Colors.transparent,
+                      border: Border(left: BorderSide(color: isSelected ? accentRed : Colors.transparent, width: 4)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(item['icon'] as IconData, color: isSelected ? accentRed : AppTheme.mutedText, size: 18),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            item['title'] as String,
+                            style: TextStyle(
+                              color: isSelected ? accentRed : AppTheme.darkText,
+                              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                              fontSize: 13,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                  child: const Icon(Icons.logout, color: accentRed, size: 18),
-                ),
-                onPressed: () async {
-                  await ref.read(authControllerProvider.notifier).adminSignOut();
-                  if (context.mounted) {
-                    context.go('/');
-                  }
-                },
-              ),
-            ],
+                );
+              },
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildWelcomeBanner(BuildContext context, bool isDesktop) {
+  Widget _buildMobileNavDropdown() {
     return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            cardColor,
-            const Color(0xFF221112),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderDark),
+      height: 55,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      color: cardColor,
+      child: Row(
+        children: [
+          const Icon(Icons.menu, color: accentRed),
+          const SizedBox(width: 12),
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<int>(
+                value: _selectedNavIndex,
+                dropdownColor: cardColor,
+                style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 13),
+                items: List.generate(_adminNavItems.length, (index) {
+                  return DropdownMenuItem(
+                    value: index,
+                    child: Text(_adminNavItems[index]['title'] as String),
+                  );
+                }),
+                onChanged: (val) {
+                  if (val != null) setState(() => _selectedNavIndex = val);
+                },
+              ),
+            ),
+          ),
+        ],
       ),
-      child: isDesktop
-          ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    );
+  }
+
+  Widget _buildAdminHeader(BuildContext context, {required bool isDesktop}) {
+    return Container(
+      height: 70,
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 28 : 16),
+      decoration: const BoxDecoration(
+        color: cardColor,
+        border: Border(bottom: BorderSide(color: borderDark)),
+      ),
+      child: Row(
+        children: [
+          Text(
+            _adminNavItems[_selectedNavIndex]['title'] as String,
+            style: const TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900),
+          ),
+          const Spacer(),
+          ElevatedButton.icon(
+            onPressed: () => context.go('/cashier/pos'),
+            icon: const Icon(Icons.point_of_sale, size: 16),
+            label: const Text('OPEN POS', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: accentRed,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          ),
+          const SizedBox(width: 12),
+          IconButton(
+            tooltip: 'Sign Out',
+            icon: const Icon(Icons.logout, color: accentRed),
+            onPressed: () async {
+              await ref.read(authControllerProvider.notifier).adminSignOut();
+              if (!context.mounted) return;
+              context.go('/');
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectedModuleView() {
+    switch (_selectedNavIndex) {
+      case 0:
+        return _buildOverviewModule();
+      case 1:
+        return _buildGenericModule('Order Management', 'Manage active dining and takeout orders.');
+      case 2:
+        return _buildGenericModule('Menu Management', 'Add, edit, or disable restaurant food products and prices.');
+      case 3:
+        return _buildGenericModule('Inventory Management', 'Monitor ingredients, stock levels, and low-stock alerts.');
+      case 4:
+        return _buildGenericModule('Staff Management', 'Manage staff accounts, roles, and pins.');
+      case 5:
+        return _buildGenericModule('Staff Attendance', 'Track clock-in, clock-out, and shift hours.');
+      case 6:
+        return _buildGenericModule('Payment Management', 'Verify GCash transactions and cash drawer sessions.');
+      case 7:
+        return _buildGenericModule('Customer Management', 'View registered customers and saved addresses.');
+      case 8:
+        return _buildGenericModule('Reports and Analytics', 'Export sales reports to PDF and CSV.');
+      case 9:
+        return _buildGenericModule('Activity Logs', 'Audit trail of secure administrative operations.');
+      case 10:
+        return _buildGenericModule('System Settings', 'Configure tax percentage, service charge, and operating hours.');
+      default:
+        return _buildOverviewModule();
+    }
+  }
+
+  // 0. Overview Module
+  Widget _buildOverviewModule() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Dashboard Overview', style: TextStyle(color: AppTheme.darkText, fontSize: 20, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          const Text('Welcome back, Admin. Here is the restaurant performance summary today.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
+          const SizedBox(height: 24),
+          _buildMetricsGrid(),
+          const SizedBox(height: 28),
+          const Text('Recent Live Orders', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: borderDark),
+            ),
+            child: Column(
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
-                    Text(
-                      'Welcome to Admin Dashboard',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 6),
-                    Text(
-                      'Monitor restaurant sales, manage POS orders, and track live inventory.',
-                      style: TextStyle(color: Colors.white54, fontSize: 13),
-                    ),
-                  ],
-                ),
-                _buildActionButtons(context),
-              ],
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Welcome to Admin Dashboard',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 6),
-                const Text(
-                  'Monitor sales, manage POS orders, and track live inventory.',
-                  style: TextStyle(color: Colors.white54, fontSize: 12),
-                ),
-                const SizedBox(height: 16),
-                _buildActionButtons(context),
+                _orderRow('#SD-1048', 'Table 4 (Dine-In)', 'Signature Smoked Ribs x2', '₱898.00', Colors.green, 'Completed'),
+                const Divider(color: borderDark, height: 20),
+                _orderRow('#SD-1047', 'Takeout - Maria', 'Classic Cheeseburger', '₱389.00', Colors.orange, 'Preparing'),
+                const Divider(color: borderDark, height: 20),
+                _orderRow('#SD-1046', 'Table 2 (Dine-In)', 'Margherita Pizza', '₱648.00', Colors.green, 'Completed'),
               ],
             ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildActionButtons(BuildContext context) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 10,
-      children: [
-        ElevatedButton.icon(
-          onPressed: () => context.go('/cashier/pos'),
-          icon: const Icon(Icons.point_of_sale, size: 18),
-          label: const Text('OPEN POS TERMINAL'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: accentRed,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        ),
-        OutlinedButton.icon(
-          onPressed: () => context.go('/customer/home'),
-          icon: const Icon(Icons.restaurant_menu, size: 18, color: Colors.white),
-          label: const Text('VIEW CATALOG', style: TextStyle(color: Colors.white)),
-          style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: Color(0xFF444444)),
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildMetricsGrid(bool isDesktop) {
+  Widget _buildMetricsGrid() {
     final metrics = [
-      {
-        'title': 'TOTAL REVENUE (TODAY)',
-        'value': '₱24,850.00',
-        'subtitle': '+14.2% from yesterday',
-        'icon': Icons.payments_outlined,
-        'color': accentRed,
-      },
-      {
-        'title': 'TOTAL ORDERS TODAY',
-        'value': '42 Orders',
-        'subtitle': '34 Dine-In • 8 Takeout',
-        'icon': Icons.receipt_long_outlined,
-        'color': Colors.amber,
-      },
-      {
-        'title': 'ACTIVE POS STATIONS',
-        'value': '2 Terminals',
-        'subtitle': 'Terminal #1 & #2 Online',
-        'icon': Icons.desktop_windows_outlined,
-        'color': Colors.green,
-      },
-      {
-        'title': 'TOP SELLING ITEM',
-        'value': 'Smoked BBQ Ribs',
-        'subtitle': '18 Portions Sold',
-        'icon': Icons.local_fire_department_outlined,
-        'color': Colors.orangeAccent,
-      },
+      {'title': 'TOTAL REVENUE', 'value': '₱24,850.00', 'sub': '+14.2% today', 'icon': Icons.payments_outlined, 'color': accentRed},
+      {'title': 'TOTAL ORDERS', 'value': '42 Orders', 'sub': '34 Dine-In • 8 Takeout', 'icon': Icons.receipt_long_outlined, 'color': Colors.amber.shade800},
+      {'title': 'ACTIVE POS', 'value': '2 Terminals', 'sub': 'Terminal #1 & #2 Online', 'icon': Icons.desktop_windows_outlined, 'color': Colors.green.shade700},
+      {'title': 'BEST SELLER', 'value': 'Smoked Ribs', 'sub': '18 Portions Sold', 'icon': Icons.local_fire_department_outlined, 'color': Colors.orange},
     ];
 
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: metrics.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isDesktop ? 4 : (MediaQuery.of(context).size.width >= 600 ? 2 : 1),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
-        childAspectRatio: isDesktop ? 1.5 : 2.2,
+        childAspectRatio: 1.8,
       ),
       itemBuilder: (context, index) {
-        final item = metrics[index];
-        final iconColor = item['color'] as Color;
-
+        final m = metrics[index];
+        final col = m['color'] as Color;
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: borderDark),
           ),
           child: Column(
@@ -449,42 +315,14 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    item['title'] as String,
-                    style: const TextStyle(
-                      color: Colors.white54,
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: iconColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Icon(item['icon'] as IconData, color: iconColor, size: 20),
-                  ),
+                  Text(m['title'] as String, style: const TextStyle(color: AppTheme.mutedText, fontSize: 11, fontWeight: FontWeight.bold)),
+                  Icon(m['icon'] as IconData, color: col, size: 20),
                 ],
               ),
-              const SizedBox(height: 10),
-              Text(
-                item['value'] as String,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w900,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                item['subtitle'] as String,
-                style: TextStyle(
-                  color: iconColor == accentRed ? Colors.greenAccent : Colors.white38,
-                  fontSize: 12,
-                ),
-              ),
+              const SizedBox(height: 8),
+              Text(m['value'] as String, style: const TextStyle(color: AppTheme.darkText, fontSize: 20, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 4),
+              Text(m['sub'] as String, style: TextStyle(color: col, fontSize: 11, fontWeight: FontWeight.bold)),
             ],
           ),
         );
@@ -492,331 +330,71 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     );
   }
 
-  Widget _buildTabNavigation() {
-    final tabs = ['System Overview', 'Recent POS Orders', 'Stock Inventory', 'Sales Reports'];
-    return Container(
-      height: 44,
-      decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: borderDark)),
-      ),
-      child: Row(
-        children: List.generate(tabs.length, (index) {
-          final isSelected = _selectedTab == index;
-          return Padding(
-            padding: const EdgeInsets.only(right: 24),
-            child: InkWell(
-              onTap: () => setState(() => _selectedTab = index),
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 10),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: isSelected ? accentRed : Colors.transparent,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                child: Text(
-                  tabs[index],
-                  style: TextStyle(
-                    color: isSelected ? Colors.white : Colors.white38,
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    fontSize: 14,
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
-      ),
-    );
-  }
-
-  Widget _buildRecentOrdersCard() {
-    return Container(
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Row(
-                children: [
-                  Icon(Icons.receipt_long, color: accentRed, size: 20),
-                  SizedBox(width: 10),
-                  Text(
-                    'Live POS Transactions & Orders',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              TextButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Exporting full transaction log...')),
-                  );
-                },
-                child: const Text('View All Orders', style: TextStyle(color: accentRed)),
-              ),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Table Header
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            decoration: BoxDecoration(
-              color: const Color(0xFF222222),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Row(
-              children: [
-                Expanded(flex: 2, child: Text('ORDER ID', style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-                Expanded(flex: 3, child: Text('CUSTOMER / TABLE', style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-                Expanded(flex: 4, child: Text('ITEMS PURCHASED', style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-                Expanded(flex: 2, child: Text('AMOUNT', style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-                Expanded(flex: 2, child: Text('STATUS', style: TextStyle(color: Colors.white54, fontSize: 11, fontWeight: FontWeight.bold))),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 8),
-
-          // Table Rows
-          ListView.separated(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _recentOrders.length,
-            separatorBuilder: (context, index) => const Divider(color: borderDark, height: 1),
-            itemBuilder: (context, index) {
-              final order = _recentOrders[index];
-              final statusColor = order['statusColor'] as Color;
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                child: Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        order['id'],
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 3,
-                      child: Text(
-                        order['customer'],
-                        style: const TextStyle(color: Colors.white70, fontSize: 13),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        order['items'],
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.white54, fontSize: 13),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        '₱${(order['total'] as double).toStringAsFixed(2)}',
-                        style: const TextStyle(color: accentRed, fontWeight: FontWeight.bold, fontSize: 13),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: statusColor.withValues(alpha: 0.4)),
-                        ),
-                        child: Text(
-                          order['status'],
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: statusColor, fontSize: 11, fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildQuickActionsCard(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Quick Management Actions',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _actionTile(
-            icon: Icons.point_of_sale_rounded,
-            title: 'Open Cashier POS',
-            subtitle: 'Process customer sales & print receipts',
-            onTap: () => context.go('/cashier/pos'),
-          ),
-          const SizedBox(height: 10),
-          _actionTile(
-            icon: Icons.menu_book_rounded,
-            title: 'Catalog & Menu Items',
-            subtitle: 'Browse & preview available menu items',
-            onTap: () => context.go('/customer/home'),
-          ),
-          const SizedBox(height: 10),
-          _actionTile(
-            icon: Icons.analytics_outlined,
-            title: 'Sales & Revenue Analytics',
-            subtitle: 'Daily summary and report breakdown',
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Generating daily sales report...')),
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _actionTile({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required VoidCallback onTap,
-  }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(10),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: const Color(0xFF222222),
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: const Color(0xFF333333)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: accentRed.withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Icon(icon, color: accentRed, size: 20),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(color: Colors.white38, fontSize: 11),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.arrow_forward_ios_rounded, color: Colors.white38, size: 14),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInventoryAlertsCard() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: borderDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.warning_amber_rounded, color: Colors.amber, size: 20),
-              SizedBox(width: 8),
-              Text(
-                'Inventory Stock Alerts',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 14),
-          _stockRow('Smoked Pork Ribs', '12 portions remaining', Colors.amber),
-          const Divider(color: borderDark, height: 16),
-          _stockRow('Special BBQ Sauce', 'Low Stock (2 Bottles)', Colors.redAccent),
-          const Divider(color: borderDark, height: 16),
-          _stockRow('Chicken Wings', '45 portions available', Colors.green),
-        ],
-      ),
-    );
-  }
-
-  Widget _stockRow(String item, String status, Color color) {
+  Widget _orderRow(String id, String customer, String items, String amount, Color statusColor, String status) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          item,
-          style: const TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.w600),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(id, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold, fontSize: 13)),
+            Text(customer, style: const TextStyle(color: AppTheme.darkText, fontSize: 12, fontWeight: FontWeight.w600)),
+            Text(items, style: const TextStyle(color: AppTheme.mutedText, fontSize: 11)),
+          ],
         ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.15),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Text(
-            status,
-            style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold),
-          ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(amount, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 13)),
+            const SizedBox(height: 4),
+            Chip(
+              label: Text(status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+              backgroundColor: statusColor.withValues(alpha: 0.15),
+              padding: EdgeInsets.zero,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+          ],
         ),
       ],
+    );
+  }
+
+  Widget _buildGenericModule(String title, String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.all(28.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(color: AppTheme.darkText, fontSize: 22, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          Text(subtitle, style: const TextStyle(color: AppTheme.mutedText, fontSize: 14)),
+          const SizedBox(height: 32),
+          Container(
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: borderDark),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.construction_rounded, color: AppTheme.primaryMaroon, size: 36),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('$title Module Active', style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 4),
+                      const Text('Manage records, view logs, and configure operational rules securely via Supabase backend.', style: TextStyle(color: AppTheme.mutedText, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

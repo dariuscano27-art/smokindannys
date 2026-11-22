@@ -1,4 +1,3 @@
-// Sign Up removed per user request. Only Log In is active.
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatelessWidget {
