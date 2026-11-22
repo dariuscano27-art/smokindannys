@@ -10,10 +10,10 @@
 - `[x]` Phase 8: Registration Validation & Password Strength Meter (Updated First, Middle, and Last Name limits to **50 characters**; Contact Number to **exact 11 digits** with numbers only; and added a real-time **Weak / Good / Strong password strength meter**).
 - `[x]` Phase 9: Landing Page Portal Selection & Role Accounts Auto-Seeding (Configured pre-configured accounts for Customer, Staff/Cashier, and Admin with automatic backend database entry and quick-fill buttons for seamless testing).
 - `[x]` Phase 10: Staff Portal Left-Side Navigation & Functional Modules (Added left-side navigation buttons for **Menu**, **Receipt**, **History**, **Payment**, and **Online Orders (Confirmation)**. Fully functional modules with crystal clear high-contrast text readability).
-- `[x]` Phase 11: Staff Menu Food Photos Integration (Added the exact 16 menu food photo assets into the staff menu module inside `CashierPosScreen`).
-- `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (Integrated the complete 11-item left sidebar navigation into `OwnerDashboardScreen` covering Overview, Orders, Menu, Inventory, Staff, Attendance, Payment, Customer, Reports, Activity Logs, and System Settings).
-- `[x]` Phase 13: Distinct Role-Based Routing & Separation (Configured GoRouter and Login redirection so that **Customer** routes to Customer Portal, **Staff / Cashier** routes to Staff Mobile POS (`/cashier/pos`), and **Admin / Owner** routes to Admin Control Center (`/owner/dashboard`)).
-- `[ ]` Phase 14: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
+- `[x]` Phase 11: Staff Menu Food Photos Integration (Images loaded inside the staff menu module).
+- `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (Integrated the complete 11-item left sidebar navigation into `OwnerDashboardScreen`).
+- `[x]` Phase 13: Distinct Role-Based Routing & Separation (Configured GoRouter and Login redirection for Customer, Staff POS, and Admin).
+- `[x]` Phase 14: Real-time Order Synchronization (`sharedOrdersProvider` implemented so that when a customer places an order from the cart, it **instantly appears** in the Admin Dashboard Overview / Order Management and Staff POS Online Orders queue).
 - `[ ]` Phase 15: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
 - `[ ]` Phase 16: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
 - `[ ]` Phase 17: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).

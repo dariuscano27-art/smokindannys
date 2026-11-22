@@ -158,6 +158,25 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Role Identification Badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppTheme.softMaroon,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppTheme.primaryMaroon),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.person_rounded, size: 14, color: AppTheme.primaryMaroon),
+                          SizedBox(width: 6),
+                          Text('ROLE: CUSTOMER PORTAL (Food Catalog & Ordering)', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 11, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
                     // Title & Search Section
                     _buildHeaderBanner(isDesktop),
 
@@ -240,6 +259,16 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
             child: const Text('Menu', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
           ),
           const SizedBox(width: 20),
+          TextButton(
+            onPressed: () => _showInfoDialog(context, 'Special Offers', 'Enjoy 20% off on all smoked ribs every weekend! Free delivery for orders over ₱1,000.'),
+            child: const Text('Offers', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+          ),
+          const SizedBox(width: 20),
+          TextButton(
+            onPressed: () => _showInfoDialog(context, 'Rewards Program', 'Earn 1 point for every ₱100 spent and redeem free burgers, steaks, and drinks!'),
+            child: const Text('Rewards', style: TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+          ),
+          const SizedBox(width: 28),
 
           // Reactive Cart Button with Dynamic Badge
           Consumer(
@@ -249,7 +278,7 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
                 alignment: Alignment.topRight,
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 24),
                     onPressed: () => showCartModal(context, ref),
                   ),
                   if (cartCount > 0)
@@ -282,37 +311,41 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
 
           Consumer(
             builder: (context, ref, child) {
-              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
-                  ref.watch(authRepositoryProvider).currentUser != null;
-
-              if (!isAuthenticated) {
-                return TextButton.icon(
-                  onPressed: () => context.push('/login'),
-                  icon: const Icon(Icons.login_rounded, color: Colors.white, size: 18),
-                  label: const Text('Sign In', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                );
-              } else {
-                return Row(
-                  children: [
-                    TextButton.icon(
-                      onPressed: () => showCustomerProfileModal(context, ref),
-                      icon: const Icon(Icons.account_circle_outlined, color: Colors.white, size: 20),
-                      label: const Text('Profile', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              return Row(
+                children: [
+                  ElevatedButton.icon(
+                    onPressed: () => showCustomerProfileModal(context, ref),
+                    icon: const Icon(Icons.person_pin_rounded, size: 16),
+                    label: const Text('Profile', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.softMaroon,
+                      foregroundColor: AppTheme.primaryMaroon,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     ),
-                    const SizedBox(width: 8),
-                    TextButton.icon(
-                      onPressed: () => showSignOutConfirmationDialog(context, ref),
-                      icon: const Icon(Icons.logout_rounded, color: Colors.white, size: 18),
-                      label: const Text('Sign Out', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await ref.read(authControllerProvider.notifier).signOut();
+                      if (!context.mounted) return;
+                      context.go('/');
+                    },
+                    icon: const Icon(Icons.logout_rounded, size: 16),
+                    label: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: AppTheme.primaryMaroon,
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
                     ),
-                  ],
-                );
-              }
+                  ),
+                ],
+              );
             },
           ),
-          const SizedBox(width: 48),
+          const SizedBox(width: 24),
         ] else ...[
-          // Mobile Actions
           Consumer(
             builder: (context, ref, child) {
               final cartCount = ref.watch(cartTotalCountProvider);
@@ -349,35 +382,39 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
               );
             },
           ),
-          Consumer(
-            builder: (context, ref, child) {
-              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
-                  ref.watch(authRepositoryProvider).currentUser != null;
-
-              if (!isAuthenticated) {
-                return IconButton(
-                  icon: const Icon(Icons.login_rounded, color: Colors.white),
-                  onPressed: () => context.push('/login'),
-                );
-              } else {
-                return Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
-                      onPressed: () => showCustomerProfileModal(context, ref),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.logout_rounded, color: Colors.white),
-                      onPressed: () => showSignOutConfirmationDialog(context, ref),
-                    ),
-                  ],
-                );
-              }
+          IconButton(
+            icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
+            onPressed: () => showCustomerProfileModal(context, ref),
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout_rounded, color: Colors.white),
+            onPressed: () async {
+              await ref.read(authControllerProvider.notifier).signOut();
+              if (!context.mounted) return;
+              context.go('/');
             },
           ),
           const SizedBox(width: 8),
         ],
       ],
+    );
+  }
+
+  void _showInfoDialog(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: Colors.white,
+        title: Text(title, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold)),
+        content: Text(content, style: const TextStyle(color: AppTheme.darkText, height: 1.4)),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon),
+            child: const Text('Close', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -389,7 +426,7 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
           'FIND YOUR NEXT FAVORITE.',
           style: TextStyle(
             color: AppTheme.darkText,
-            fontSize: 32,
+            fontSize: 36,
             fontWeight: FontWeight.w900,
             letterSpacing: -0.5,
           ),
@@ -400,54 +437,35 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
           style: TextStyle(color: AppTheme.mutedText, fontSize: 15),
         ),
         const SizedBox(height: 24),
-        Row(
-          children: [
-            Expanded(
-              child: SizedBox(
-                height: 48,
-                child: TextField(
-                  onChanged: (val) => setState(() => _searchQuery = val),
-                  style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
-                  decoration: InputDecoration(
-                    hintText: 'Search menu items...',
-                    hintStyle: const TextStyle(color: AppTheme.mutedText, fontSize: 14),
-                    prefixIcon: const Icon(Icons.search, color: AppTheme.mutedText, size: 20),
-                    filled: true,
-                    fillColor: AppTheme.surface,
-                    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppTheme.borderMaroon),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppTheme.borderMaroon),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(24),
-                      borderSide: const BorderSide(color: AppTheme.primaryMaroon, width: 1.8),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
+        TextField(
+          onChanged: (val) => setState(() => _searchQuery = val.trim().toLowerCase()),
+          style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
+          decoration: InputDecoration(
+            hintText: 'Search menu items...',
+            hintStyle: const TextStyle(color: AppTheme.mutedText, fontSize: 13),
+            prefixIcon: const Icon(Icons.search, color: AppTheme.mutedText, size: 20),
+            filled: true,
+            fillColor: AppTheme.surface,
+            contentPadding: const EdgeInsets.symmetric(vertical: 16),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppTheme.borderMaroon)),
+            enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppTheme.borderMaroon)),
+            focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(24), borderSide: const BorderSide(color: AppTheme.primaryMaroon, width: 1.8)),
+          ),
         ),
       ],
     );
   }
 
   Widget _buildCategoryBar() {
-    final categories = ['All', 'BBQ & Grills', 'Chicken', 'Pizza', 'Pasta', 'Sides', 'All-Day Breakfast', 'Desserts'];
-    final icons = [
-      Icons.grid_view,
-      Icons.local_fire_department,
-      Icons.kebab_dining,
-      Icons.local_pizza,
-      Icons.dinner_dining,
-      Icons.room_service,
-      Icons.breakfast_dining,
-      Icons.cake,
+    final categories = [
+      {'icon': Icons.grid_view, 'name': 'All'},
+      {'icon': Icons.local_fire_department, 'name': 'BBQ & Grills'},
+      {'icon': Icons.kebab_dining, 'name': 'Chicken'},
+      {'icon': Icons.local_pizza, 'name': 'Pizza'},
+      {'icon': Icons.dinner_dining, 'name': 'Pasta'},
+      {'icon': Icons.room_service, 'name': 'Sides'},
+      {'icon': Icons.breakfast_dining, 'name': 'All-Day Breakfast'},
+      {'icon': Icons.cake, 'name': 'Desserts'},
     ];
 
     return SizedBox(
@@ -455,30 +473,35 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
       child: ListView.separated(
         scrollDirection: Axis.horizontal,
         itemCount: categories.length,
-        separatorBuilder: (context, index) => const SizedBox(width: 24),
+        separatorBuilder: (context, index) => const SizedBox(width: 20),
         itemBuilder: (context, index) {
+          final cat = categories[index];
           final isSelected = _selectedCategoryIndex == index;
-          final catName = categories[index];
           return InkWell(
             onTap: () => setState(() => _selectedCategoryIndex = index),
             borderRadius: BorderRadius.circular(20),
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 18),
               decoration: BoxDecoration(
                 color: isSelected ? AppTheme.primaryMaroon : AppTheme.surface,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: isSelected ? AppTheme.primaryMaroon : AppTheme.borderMaroon),
               ),
-              child: Row(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(icons[index], color: isSelected ? Colors.white : AppTheme.primaryMaroon, size: 20),
-                  const SizedBox(width: 10),
+                  Icon(
+                    cat['icon'] as IconData,
+                    color: isSelected ? Colors.white : AppTheme.primaryMaroon,
+                    size: 22,
+                  ),
+                  const SizedBox(height: 6),
                   Text(
-                    catName,
+                    cat['name'] as String,
                     style: TextStyle(
-                      color: isSelected ? Colors.white : AppTheme.darkText,
+                      color: isSelected ? Colors.white : AppTheme.mutedText,
+                      fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      fontSize: 13,
                     ),
                   ),
                 ],
@@ -491,22 +514,26 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
   }
 
   Widget _buildProductGrid(BuildContext context, List<dynamic> products, bool isDesktop) {
-    final categoriesList = ['All', 'BBQ & Grills', 'Chicken', 'Pizza', 'Pasta', 'Sides', 'All-Day Breakfast', 'Desserts'];
-    final selectedCategory = categoriesList[_selectedCategoryIndex];
+    // Filter by category and search query
+    final categories = ['All', 'BBQ & Grills', 'Chicken', 'Pizza', 'Pasta', 'Sides', 'All-Day Breakfast', 'Desserts'];
+    final selectedCat = categories[_selectedCategoryIndex];
 
     final filtered = products.where((p) {
       final name = (p['name'] ?? '').toString().toLowerCase();
+      final desc = (p['description'] ?? '').toString().toLowerCase();
       final cat = (p['category'] ?? '').toString();
-      final matchesSearch = name.contains(_searchQuery.toLowerCase());
-      final matchesCategory = selectedCategory == 'All' || cat == selectedCategory;
-      return matchesSearch && matchesCategory;
+
+      final matchesSearch = name.contains(_searchQuery) || desc.contains(_searchQuery);
+      final matchesCat = selectedCat == 'All' || cat == selectedCat;
+
+      return matchesSearch && matchesCat;
     }).toList();
 
     if (filtered.isEmpty) {
       return const Center(
         child: Padding(
-          padding: EdgeInsets.all(40.0),
-          child: Text('No menu items found.', style: TextStyle(color: AppTheme.mutedText, fontSize: 16)),
+          padding: EdgeInsets.all(60.0),
+          child: Text('No menu items found matching your search.', style: TextStyle(color: AppTheme.mutedText, fontSize: 14)),
         ),
       );
     }
@@ -516,115 +543,94 @@ class _CustomerHomeScreenState extends ConsumerState<CustomerHomeScreen> {
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: isDesktop ? 4 : 2,
-        childAspectRatio: 0.78,
-        crossAxisSpacing: 24,
-        mainAxisSpacing: 24,
+        childAspectRatio: 0.72,
+        crossAxisSpacing: 20,
+        mainAxisSpacing: 20,
       ),
       itemCount: filtered.length,
       itemBuilder: (context, index) {
-        final item = filtered[index];
-        final name = item['name'] ?? 'Item';
-        final desc = item['description'] ?? 'Delicious meal from Smokin Dannys.';
-        final rawPrice = (item['base_price'] ?? item['price'] ?? 29900) as num;
-        final double pricePesos;
-        if (rawPrice >= 10000) {
-          pricePesos = rawPrice / 100.0;
-        } else {
-          pricePesos = rawPrice.toDouble();
-        }
-        final imageUrl = item['image_url'] as String?;
-
-        return Container(
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: AppTheme.borderMaroon),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x0A800000),
-                blurRadius: 10,
-                offset: Offset(0, 4),
-              ),
-            ],
-          ),
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.softMaroon,
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  alignment: Alignment.center,
-                  child: imageUrl != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(14),
-                          child: Image.asset(imageUrl, fit: BoxFit.cover, width: double.infinity),
-                        )
-                      : const Icon(Icons.fastfood_rounded, size: 54, color: AppTheme.primaryMaroon),
-                ),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                desc,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(color: AppTheme.mutedText, fontSize: 11, height: 1.3),
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '₱${pricePesos.toStringAsFixed(2)}',
-                    style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 15, fontWeight: FontWeight.w900),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      final isAuthenticated = ref.read(isAdminAuthenticatedProvider) ||
-                          ref.read(authRepositoryProvider).currentUser != null;
-
-                      if (!isAuthenticated) {
-                        AppToast.show(
-                          context,
-                          message: 'Please sign in first to add items to your cart.',
-                          actionLabel: 'Sign In',
-                          onAction: () => context.push('/login'),
-                        );
-                        context.push('/login');
-                      } else {
-                        ref.read(cartProvider.notifier).addItem({
-                          'name': name,
-                          'price': pricePesos,
-                          'image_url': imageUrl,
-                          'category': item['category'] ?? 'Main',
-                        });
-                        AppToast.show(context, message: 'Added $name to cart!');
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryMaroon,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    child: const Text('Add to Cart', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        );
+        final product = filtered[index];
+        return _productCard(context, product);
       },
+    );
+  }
+
+  Widget _productCard(BuildContext context, dynamic product) {
+    final name = product['name'] ?? 'Product';
+    final desc = product['description'] ?? '';
+    final rawPrice = (product['price'] ?? 0);
+    final price = rawPrice > 1000 ? rawPrice / 100.0 : (rawPrice is int ? rawPrice.toDouble() : rawPrice);
+    final imageUrl = product['image_url'] as String?;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppTheme.borderMaroon),
+      ),
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.softMaroon,
+                borderRadius: BorderRadius.circular(14),
+              ),
+              alignment: Alignment.center,
+              child: imageUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(imageUrl, fit: BoxFit.cover, width: double.infinity),
+                    )
+                  : const Icon(Icons.fastfood_rounded, size: 40, color: AppTheme.primaryMaroon),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 14),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            desc,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(color: AppTheme.mutedText, fontSize: 11, height: 1.3),
+          ),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                '₱${price.toStringAsFixed(2)}',
+                style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 15),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  ref.read(cartProvider.notifier).addItem({
+                    'name': name,
+                    'price': price,
+                    'image_url': imageUrl,
+                    'category': product['category'] ?? 'Main',
+                  });
+                  AppToast.show(context, message: 'Added $name to cart!');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryMaroon,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: const Text('Add', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
