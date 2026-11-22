@@ -8,10 +8,11 @@
 - `[x]` Phase 6: Staff Mobile POS & Dashboard App Optimization (Dedicated Android Mobile App UI matching the Chrome desktop theme, touch-friendly POS grid, live orders queue, and staff profile with zero analysis errors).
 - `[x]` Phase 7: Layout & Pixel Overflow Optimization (Refactored `LandingScreen` and menu grid to use responsive `GridView` containers, removing all horizontal and vertical pixel overflow issues).
 - `[x]` Phase 8: Registration Validation & Password Strength Meter (Updated First, Middle, and Last Name limits to **50 characters**; Contact Number to **exact 11 digits** with numbers only; and added a real-time **Weak / Good / Strong password strength meter**).
-- `[ ]` Phase 9: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
-- `[ ]` Phase 10: Owner Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
-- `[ ]` Phase 11: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
-- `[ ]` Phase 12: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
-- `[ ]` Phase 13: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
-- `[ ]` Phase 14: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
-- `[ ]` Phase 15: Automated Testing, Security Audit & Client Deployment Preparation.
+- `[x]` Phase 9: Landing Page Portal Selection Dialog (Changed landing page login button to **"Login / Register"**, which opens a role selection modal featuring **3 buttons**: Customer Portal, Admin / Owner Portal, and Staff / Cashier POS).
+- `[ ]` Phase 10: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
+- `[ ]` Phase 11: Owner/Admin Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
+- `[ ]` Phase 12: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
+- `[ ]` Phase 13: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
+- `[ ]` Phase 14: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
+- `[ ]` Phase 15: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
+- `[ ]` Phase 16: Automated Testing, Security Audit & Client Deployment Preparation.

@@ -31,7 +31,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _signupPasswordController = TextEditingController();
   final _signupConfirmPasswordController = TextEditingController();
 
-  bool _obscureLoginPassword = true;
+  bool _obscurePassword = true;
   bool _obscureSignupPassword = true;
   bool _obscureConfirmPassword = true;
   bool _rememberMe = false;
@@ -192,22 +192,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  void _fillStaffDemo() {
-    setState(() {
-      _selectedTab = 0;
-      _loginEmailController.text = 'staff@smokindannys.com';
-      _loginPasswordController.text = 'Password123';
-    });
-  }
-
-  void _fillAdminDemo() {
-    setState(() {
-      _selectedTab = 0;
-      _loginEmailController.text = 'admin@smokindannys.com';
-      _loginPasswordController.text = 'Password123';
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
@@ -278,7 +262,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'BBQ & POS MANAGEMENT SYSTEM',
+                        'CUSTOMER PORTAL',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 10,
@@ -376,7 +360,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
           decoration: InputDecoration(
             counterText: '',
-            hintText: 'admin@smokindannys.com or customer...',
+            hintText: 'name@example.com',
             hintStyle: const TextStyle(color: Color(0xFFA0989A), fontSize: 12),
             prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primaryMaroon, size: 18),
             filled: true,
@@ -397,7 +381,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         const SizedBox(height: 6),
         TextFormField(
           controller: _loginPasswordController,
-          obscureText: _obscureLoginPassword,
+          obscureText: _obscurePassword,
           maxLength: 30,
           style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
           decoration: InputDecoration(
@@ -406,8 +390,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             hintStyle: const TextStyle(color: Color(0xFFA0989A), fontSize: 13),
             prefixIcon: const Icon(Icons.lock_outline, color: AppTheme.primaryMaroon, size: 18),
             suffixIcon: IconButton(
-              icon: Icon(_obscureLoginPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.primaryMaroon, size: 18),
-              onPressed: () => setState(() => _obscureLoginPassword = !_obscureLoginPassword),
+              icon: Icon(_obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: AppTheme.primaryMaroon, size: 18),
+              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
             ),
             filled: true,
             fillColor: AppTheme.surface,
@@ -468,26 +452,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _fillAdminDemo,
-                icon: const Icon(Icons.admin_panel_settings, size: 14, color: AppTheme.primaryMaroon),
-                label: const Text('Admin Demo', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 11, fontWeight: FontWeight.bold)),
-                style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.primaryMaroon), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.symmetric(vertical: 8)),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _fillStaffDemo,
-                icon: const Icon(Icons.point_of_sale, size: 14, color: AppTheme.primaryMaroon),
-                label: const Text('Staff POS', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 11, fontWeight: FontWeight.bold)),
-                style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.primaryMaroon), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.symmetric(vertical: 8)),
-              ),
-            ),
-          ],
+        Center(
+          child: TextButton(
+            onPressed: () => context.go('/'),
+            child: const Text('← Back to Home', style: TextStyle(color: AppTheme.mutedText, fontSize: 12, fontWeight: FontWeight.bold)),
+          ),
         ),
       ],
     );
@@ -495,7 +464,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildSignupForm(bool isLoading) {
     final nameFormatter = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]'))];
-    final phoneFormatter = [FilteringTextInputFormatter.digitsOnly]; // numbers only
+    final phoneFormatter = [FilteringTextInputFormatter.digitsOnly];
 
     return Column(
       key: const ValueKey('signup_form'),
@@ -607,7 +576,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
         const SizedBox(height: 4),
-        // Password Strength Meter Badge
         if (_passwordStrength.isNotEmpty)
           Row(
             children: [
@@ -689,6 +657,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             onPressed: isLoading ? null : _handleSignup,
             style: ElevatedButton.styleFrom(backgroundColor: Colors.transparent, shadowColor: Colors.transparent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24))),
             child: isLoading ? const SizedBox(width: 22, height: 22, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)) : const Text('Register Account', style: TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: TextButton(
+            onPressed: () => context.go('/'),
+            child: const Text('← Back to Home', style: TextStyle(color: AppTheme.mutedText, fontSize: 12, fontWeight: FontWeight.bold)),
           ),
         ),
       ],

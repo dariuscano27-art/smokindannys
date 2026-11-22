@@ -74,14 +74,14 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // 1. Customer Portal Button
+              // 1. Customer Portal Button (Just "Customer Portal")
               ElevatedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
                   context.push('/login');
                 },
                 icon: const Icon(Icons.person_outline, size: 18),
-                label: const Text('Customer Portal (Log In / Register)'),
+                label: const Text('Customer Portal'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryMaroon,
                   foregroundColor: Colors.white,
@@ -92,7 +92,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
               ),
               const SizedBox(height: 12),
 
-              // 2. Admin Portal Button
+              // 2. Admin / Owner Portal Button -> Opens Admin/Owner login page (/admin/login)
               OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
@@ -109,11 +109,11 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
               ),
               const SizedBox(height: 12),
 
-              // 3. Staff / POS Portal Button
+              // 3. Staff / Cashier POS -> Opens Admin/Owner portal login for staff as well
               OutlinedButton.icon(
                 onPressed: () {
                   Navigator.pop(context);
-                  context.push('/login'); // or staff login
+                  context.push('/admin/login');
                 },
                 icon: const Icon(Icons.point_of_sale_outlined, size: 18, color: AppTheme.primaryMaroon),
                 label: const Text('Staff / Cashier POS', style: TextStyle(color: AppTheme.primaryMaroon)),
