@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/admin_login_page.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
+import '../../features/auth/presentation/signup_screen.dart';
 import '../../features/auth/presentation/terms_screen.dart';
 import '../../features/catalog/presentation/customer_home_screen.dart';
 import '../../features/dashboard/presentation/owner_dashboard_screen.dart';
@@ -32,7 +33,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     refreshListenable: notifier,
-    initialLocation: '/login',
+    initialLocation: '/',
     redirect: (context, state) {
       final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
       final isGoingToAdminDashboard = state.matchedLocation == '/owner/dashboard' ||
@@ -40,20 +41,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
       // Protect admin dashboard route from unauthenticated users
       if (isGoingToAdminDashboard && !isAdminAuthenticated) {
-        return '/login';
+        return '/';
       }
       return null;
     },
     routes: [
       GoRoute(
         path: '/',
-        name: 'root_login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/login',
-        name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        name: 'landing',
+        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/admin/login',
@@ -72,6 +68,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/signup',
+        name: 'signup',
+        builder: (context, state) => const SignupScreen(),
+      ),
+      GoRoute(
         path: '/terms',
         name: 'terms',
         builder: (context, state) => const TermsScreen(),
@@ -80,11 +86,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/customer/home',
         name: 'customer_home',
         builder: (context, state) => const CustomerHomeScreen(),
-      ),
-      GoRoute(
-        path: '/landing',
-        name: 'landing',
-        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/owner/dashboard',

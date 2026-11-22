@@ -36,9 +36,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      AppToast.show(context, message: 'Signed in successfully! Welcome back.');
-
       final authRepo = ref.read(authRepositoryProvider);
       final user = authRepo.currentUser;
       if (!mounted) return;
@@ -76,6 +73,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _fillStaffDemo() {
     setState(() {
       _emailController.text = 'staff@smokindannys.com';
+      _passwordController.text = 'Password123';
+    });
+  }
+
+  void _fillAdminDemo() {
+    setState(() {
+      _emailController.text = 'admin@smokindannys.com';
       _passwordController.text = 'Password123';
     });
   }
@@ -150,7 +154,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'STAFF MOBILE POS & DASHBOARD',
+                        'BBQ & POS MANAGEMENT SYSTEM',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 10,
@@ -169,8 +173,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         keyboardType: TextInputType.emailAddress,
                         style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
                         decoration: InputDecoration(
-                          hintText: 'staff@smokindannys.com',
-                          hintStyle: const TextStyle(color: Color(0xFFA0989A), fontSize: 13),
+                          hintText: 'admin@smokindannys.com or staff@smokindannys.com',
+                          hintStyle: const TextStyle(color: Color(0xFFA0989A), fontSize: 12),
                           prefixIcon: const Icon(Icons.email_outlined, color: AppTheme.primaryMaroon, size: 18),
                           filled: true,
                           fillColor: AppTheme.surface,
@@ -309,16 +313,35 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                       const SizedBox(height: 16),
 
-                      // Quick Staff Demo Button
-                      OutlinedButton.icon(
-                        onPressed: _fillStaffDemo,
-                        icon: const Icon(Icons.flash_on, size: 16, color: AppTheme.primaryMaroon),
-                        label: const Text('Quick Fill Staff Account', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 12, fontWeight: FontWeight.bold)),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: AppTheme.primaryMaroon),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          padding: const EdgeInsets.symmetric(vertical: 10),
-                        ),
+                      // Quick Demo Fill Buttons
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _fillAdminDemo,
+                              icon: const Icon(Icons.admin_panel_settings, size: 14, color: AppTheme.primaryMaroon),
+                              label: const Text('Admin Demo', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 11, fontWeight: FontWeight.bold)),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: AppTheme.primaryMaroon),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: _fillStaffDemo,
+                              icon: const Icon(Icons.point_of_sale, size: 14, color: AppTheme.primaryMaroon),
+                              label: const Text('Staff POS', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 11, fontWeight: FontWeight.bold)),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: AppTheme.primaryMaroon),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                padding: const EdgeInsets.symmetric(vertical: 8),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

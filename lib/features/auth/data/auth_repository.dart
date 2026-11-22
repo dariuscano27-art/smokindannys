@@ -9,30 +9,33 @@ class AuthRepository {
   Stream<AuthState> get authStateChanges => _client.auth.onAuthStateChange;
 
   Future<AuthResponse> signIn({required String email, required String password}) async {
+    final cleanEmail = email.trim().toLowerCase();
     try {
       return await _client.auth.signInWithPassword(
-        email: email.trim(),
+        email: cleanEmail,
         password: password,
       );
     } catch (e) {
-      // If staff default account doesn't exist yet, auto-provision it into the database automatically!
-      if (email.trim().toLowerCase() == 'staff@smokindannys.com') {
+      // Auto-provision staff/cashier or admin/owner if they don't exist yet in Supabase Auth
+      if (cleanEmail == 'staff@smokindannys.com' || cleanEmail == 'admin@smokindannys.com' || cleanEmail == 'owner@smokindannys.com') {
+        final role = (cleanEmail == 'staff@smokindannys.com') ? 'cashier' : 'owner';
+        final fullName = (role == 'cashier') ? 'Staff Cashier' : 'Store Owner';
         try {
           final signupRes = await _client.auth.signUp(
-            email: 'staff@smokindannys.com',
+            email: cleanEmail,
             password: password,
-            data: {'full_name': 'Staff Cashier', 'phone': '+639170000000'},
+            data: {'full_name': fullName, 'phone': '+639170000000'},
           );
           if (signupRes.user != null) {
             await _client.from('profiles').upsert({
               'id': signupRes.user!.id,
-              'email': 'staff@smokindannys.com',
-              'full_name': 'Staff Cashier',
+              'email': cleanEmail,
+              'full_name': fullName,
               'phone': '+639170000000',
             });
             await _client.from('user_roles').upsert({
               'user_id': signupRes.user!.id,
-              'role': 'cashier',
+              'role': role,
             });
             return signupRes;
           }
