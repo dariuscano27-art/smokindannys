@@ -192,6 +192,30 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  void _fillCustomerDemo() {
+    setState(() {
+      _selectedTab = 0;
+      _loginEmailController.text = 'customer@smokindannys.com';
+      _loginPasswordController.text = 'Password123';
+    });
+  }
+
+  void _fillStaffDemo() {
+    setState(() {
+      _selectedTab = 0;
+      _loginEmailController.text = 'staff@smokindannys.com';
+      _loginPasswordController.text = 'Password123';
+    });
+  }
+
+  void _fillAdminDemo() {
+    setState(() {
+      _selectedTab = 0;
+      _loginEmailController.text = 'admin@smokindannys.com';
+      _loginPasswordController.text = 'Password123';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
@@ -262,7 +286,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                       const SizedBox(height: 4),
                       const Text(
-                        'CUSTOMER PORTAL',
+                        'BBQ & POS MANAGEMENT SYSTEM',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 10,
@@ -452,6 +476,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           ),
         ),
         const SizedBox(height: 16),
+        // 3 Quick Demo Role Buttons for Testing
+        const Text('Instant Role Testing (Quick Fill):', style: TextStyle(color: AppTheme.mutedText, fontSize: 11, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _fillCustomerDemo,
+                style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.primaryMaroon), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.symmetric(vertical: 6)),
+                child: const Text('Customer', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 10, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _fillStaffDemo,
+                style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.primaryMaroon), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.symmetric(vertical: 6)),
+                child: const Text('Staff POS', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 10, fontWeight: FontWeight.bold)),
+              ),
+            ),
+            const SizedBox(width: 4),
+            Expanded(
+              child: OutlinedButton(
+                onPressed: _fillAdminDemo,
+                style: OutlinedButton.styleFrom(side: const BorderSide(color: AppTheme.primaryMaroon), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), padding: const EdgeInsets.symmetric(vertical: 6)),
+                child: const Text('Admin', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 10, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
         Center(
           child: TextButton(
             onPressed: () => context.go('/'),

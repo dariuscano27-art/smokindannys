@@ -16,10 +16,12 @@ class AuthRepository {
         password: password,
       );
     } catch (e) {
-      // Auto-provision staff/cashier or admin/owner if they don't exist yet in Supabase Auth
-      if (cleanEmail == 'staff@smokindannys.com' || cleanEmail == 'admin@smokindannys.com' || cleanEmail == 'owner@smokindannys.com') {
-        final role = (cleanEmail == 'staff@smokindannys.com') ? 'cashier' : 'owner';
-        final fullName = (role == 'cashier') ? 'Staff Cashier' : 'Store Owner';
+      // Auto-provision customer, staff/cashier, or admin/owner if they don't exist yet in Supabase Auth
+      if (cleanEmail == 'customer@smokindannys.com' || cleanEmail == 'staff@smokindannys.com' || cleanEmail == 'admin@smokindannys.com' || cleanEmail == 'owner@smokindannys.com') {
+        final role = (cleanEmail == 'staff@smokindannys.com')
+            ? 'cashier'
+            : (cleanEmail == 'customer@smokindannys.com' ? 'customer' : 'owner');
+        final fullName = (role == 'cashier') ? 'Staff Cashier' : (role == 'customer' ? 'Test Customer' : 'Store Owner');
         try {
           final signupRes = await _client.auth.signUp(
             email: cleanEmail,
