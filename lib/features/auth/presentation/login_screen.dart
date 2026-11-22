@@ -37,10 +37,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _rememberMe = false;
   bool _acceptTerms = false;
 
+  String _passwordStrength = '';
+  Color _passwordStrengthColor = Colors.grey;
+
   @override
   void initState() {
     super.initState();
     _selectedTab = widget.initialTab;
+    _signupPasswordController.addListener(_evaluatePasswordStrength);
+  }
+
+  void _evaluatePasswordStrength() {
+    final pwd = _signupPasswordController.text;
+    if (pwd.isEmpty) {
+      setState(() {
+        _passwordStrength = '';
+        _passwordStrengthColor = Colors.grey;
+      });
+      return;
+    }
+
+    bool hasUppercase = pwd.contains(RegExp(r'[A-Z]'));
+    bool hasDigits = pwd.contains(RegExp(r'[0-9]'));
+    bool hasSpecialCharacters = pwd.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+
+    if (pwd.length < 8 || (!hasUppercase && !hasDigits)) {
+      setState(() {
+        _passwordStrength = 'Weak Password';
+        _passwordStrengthColor = Colors.red;
+      });
+    } else if (pwd.length >= 8 && hasUppercase && hasDigits && !hasSpecialCharacters) {
+      setState(() {
+        _passwordStrength = 'Good Password';
+        _passwordStrengthColor = Colors.orange;
+      });
+    } else if (pwd.length >= 10 && hasUppercase && hasDigits && hasSpecialCharacters) {
+      setState(() {
+        _passwordStrength = 'Strong Password';
+        _passwordStrengthColor = Colors.green;
+      });
+    } else {
+      setState(() {
+        _passwordStrength = 'Good Password';
+        _passwordStrengthColor = Colors.orange;
+      });
+    }
   }
 
   @override
@@ -454,17 +495,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildSignupForm(bool isLoading) {
     final nameFormatter = [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z\s]'))];
-    final phoneFormatter = [FilteringTextInputFormatter.allow(RegExp(r'[0-9+]'))];
+    final phoneFormatter = [FilteringTextInputFormatter.digitsOnly]; // numbers only
 
     return Column(
       key: const ValueKey('signup_form'),
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text('First Name * (Max 30 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
+        const Text('First Name * (Max 50 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _signupFirstNameController,
-          maxLength: 30,
+          maxLength: 50,
           inputFormatters: nameFormatter,
           style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
           decoration: _inputDec('David', Icons.person_outline),
@@ -475,11 +516,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
         const SizedBox(height: 12),
-        const Text('Middle Name (Optional, Max 30 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
+        const Text('Middle Name (Optional, Max 50 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _signupMiddleNameController,
-          maxLength: 30,
+          maxLength: 50,
           inputFormatters: nameFormatter,
           style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
           decoration: _inputDec('Cruz', Icons.person_outline),
@@ -489,11 +530,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
         const SizedBox(height: 12),
-        const Text('Surname * (Max 30 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
+        const Text('Surname * (Max 50 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _signupSurnameController,
-          maxLength: 30,
+          maxLength: 50,
           inputFormatters: nameFormatter,
           style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
           decoration: _inputDec('Johnson', Icons.person_outline),
@@ -519,18 +560,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           },
         ),
         const SizedBox(height: 12),
-        const Text('Phone Number * (Max 13 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
+        const Text('Contact Number * (11 digits only)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
         TextFormField(
           controller: _signupPhoneController,
-          keyboardType: TextInputType.phone,
-          maxLength: 13,
+          keyboardType: TextInputType.number,
+          maxLength: 11,
           inputFormatters: phoneFormatter,
           style: const TextStyle(color: AppTheme.darkText, fontSize: 14),
           decoration: _inputDec('09123456789', Icons.phone_outlined),
           validator: (value) {
-            if (value == null || value.trim().isEmpty) return 'Phone number is required';
-            if (value.length < 10) return 'Phone number must be at least 10 digits';
+            if (value == null || value.trim().isEmpty) return 'Contact number is required';
+            if (value.length != 11) return 'Must be exactly 11 digits (e.g. 09123456789)';
+            if (!value.startsWith('09')) return 'Must start with 09';
             return null;
           },
         ),
@@ -561,11 +603,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           validator: (value) {
             if (value == null || value.trim().isEmpty) return 'Password is required';
             if (value.length < 8) return 'Minimum 8 characters required';
-            if (!value.contains(RegExp(r'[A-Z]'))) return 'Must contain at least 1 uppercase letter';
-            if (!value.contains(RegExp(r'[0-9]'))) return 'Must contain at least 1 number';
             return null;
           },
         ),
+        const SizedBox(height: 4),
+        // Password Strength Meter Badge
+        if (_passwordStrength.isNotEmpty)
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  color: _passwordStrengthColor.withValues(alpha: 0.15),
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: _passwordStrengthColor),
+                ),
+                child: Text(
+                  _passwordStrength,
+                  style: TextStyle(color: _passwordStrengthColor, fontSize: 11, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
         const SizedBox(height: 12),
         const Text('Confirm Password * (Max 30 chars)', style: TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.w600)),
         const SizedBox(height: 6),
