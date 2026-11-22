@@ -8,15 +8,16 @@
 - `[x]` Phase 6: Staff Mobile POS & Dashboard App Optimization (Dedicated Android Mobile App UI matching the Chrome desktop theme, touch-friendly POS grid, live orders queue, and staff profile with zero analysis errors).
 - `[x]` Phase 7: Layout & Pixel Overflow Optimization (Refactored `LandingScreen` and menu grid to use responsive `GridView` containers, removing all horizontal and vertical pixel overflow issues).
 - `[x]` Phase 8: Registration Validation & Password Strength Meter (Updated First, Middle, and Last Name limits to **50 characters**; Contact Number to **exact 11 digits** with numbers only; and added a real-time **Weak / Good / Strong password strength meter**).
-- `[x]` Phase 9: Landing Page Portal Selection & Role Accounts Auto-Seeding (Configured pre-configured accounts for Customer, Staff/Cashier, and Admin with automatic backend database entry and quick-fill buttons for seamless testing).
-- `[x]` Phase 10: Staff Portal Left-Side Navigation & Functional Modules (Added left-side navigation buttons for **Menu**, **Receipt**, **History**, **Payment**, and **Online Orders (Confirmation)**. Fully functional modules with crystal clear high-contrast text readability).
-- `[x]` Phase 11: Staff Menu Food Photos Integration (Images loaded inside the staff menu module).
-- `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (Integrated the complete 11-item left sidebar navigation into `OwnerDashboardScreen`).
-- `[x]` Phase 13: Strict Route Isolation (Ensured Admin login routes strictly to `/owner/dashboard`, Staff login routes strictly to `/cashier/pos`, and Customer login routes strictly to `/customer/home` with zero URL mixing).
+- `[x]` Phase 9: Landing Page Portal Selection & Role-Based Auto-Seeding.
+- `[x]` Phase 10: Staff Portal Left-Side Navigation & Functional Modules (Menu, Receipt, History, Payment, Online Orders).
+- `[x]` Phase 11: Staff Menu Food Photos Integration.
+- `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (`OwnerDashboardScreen`).
+- `[x]` Phase 13: Strict Route Isolation & Role Redirection (Fully fixed login redirection and route guarding so Admin goes strictly to `/owner/dashboard`, Staff goes strictly to `/cashier/pos`, and Customer goes strictly to `/customer/home` without cross-role leakage or fallback to customer home).
 - `[x]` Phase 14: Real-time Order Synchronization (`sharedOrdersProvider` implemented).
 - `[x]` Phase 15: Explicit Role Identification Badges.
-- `[ ]` Phase 16: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
-- `[ ]` Phase 17: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
-- `[ ]` Phase 18: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
-- `[ ]` Phase 19: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
-- `[ ]` Phase 20: Automated Testing, Security Audit & Client Deployment Preparation.
+- `[x]` Phase 16: Comprehensive Authentication & RBAC Architecture Fix (Senior Full-Stack Developer Inspection & Resolution - zero analyzer errors, full Supabase session persistence, and secure route guards).
+- `[ ]` Phase 17: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
+- `[ ]` Phase 18: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
+- `[ ]` Phase 19: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
+- `[ ]` Phase 20: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
+- `[ ]` Phase 21: Automated Testing, Security Audit & Client Deployment Preparation.

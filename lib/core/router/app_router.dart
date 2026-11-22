@@ -79,14 +79,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     refreshListenable: notifier,
     initialLocation: kIsWeb ? '/' : '/admin/login',
     redirect: (context, state) async {
-      final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
+      final prefs = await SharedPreferences.getInstance();
+      final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+      final role = prefs.getString('user_role') ?? 'customer';
       final location = state.matchedLocation;
 
       // Handle direct typing of /admin or /staff
       if (location == '/admin') return '/admin/login';
       if (location == '/staff') return '/staff/login';
 
-      if (!isAdminAuthenticated) {
+      if (!isLoggedIn) {
         if (location == '/owner/dashboard' || location == '/admin/dashboard') {
           return '/admin/login';
         }
@@ -99,10 +101,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      // If authenticated, enforce strict role-based access control
-      final prefs = await SharedPreferences.getInstance();
-      final role = prefs.getString('user_role') ?? 'customer';
-
+      // If logged in according to SharedPreferences, enforce strict role-based dashboard redirection
       if (role == 'owner' || role == 'admin') {
         // Admin must be on /owner/dashboard
         if (location == '/customer/home' || location == '/cashier/pos' || location == '/') {
