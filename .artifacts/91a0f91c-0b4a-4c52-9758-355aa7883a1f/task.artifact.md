@@ -9,9 +9,9 @@
 - `[x]` Phase 7: Layout & Pixel Overflow Optimization (Refactored `LandingScreen` and menu grid to use responsive `GridView` containers, removing all horizontal and vertical pixel overflow issues).
 - `[x]` Phase 8: Registration Validation & Password Strength Meter (Updated First, Middle, and Last Name limits to **50 characters**; Contact Number to **exact 11 digits** with numbers only; and added a real-time **Weak / Good / Strong password strength meter**).
 - `[x]` Phase 9: Landing Page Portal Selection & Role Accounts Auto-Seeding (Configured pre-configured accounts for Customer, Staff/Cashier, and Admin with automatic backend database entry and quick-fill buttons for seamless testing).
-- `[ ]` Phase 10: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
-- `[ ]` Phase 11: Owner/Admin Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
-- `[ ]` Phase 12: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
+- `[x]` Phase 10: Staff Portal Left-Side Navigation & Functional Modules (Added left-side navigation buttons for **Menu**, **Receipt**, **History**, **Payment**, and **Online Orders (Confirmation)**. Fully functional modules with crystal clear high-contrast text readability).
+- `[ ]` Phase 11: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
+- `[ ]` Phase 12: Owner/Admin Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
 - `[ ]` Phase 13: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
 - `[ ]` Phase 14: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
 - `[ ]` Phase 15: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
