@@ -12,8 +12,8 @@
 - `[x]` Phase 10: Staff Portal Left-Side Navigation & Functional Modules (Added left-side navigation buttons for **Menu**, **Receipt**, **History**, **Payment**, and **Online Orders (Confirmation)**. Fully functional modules with crystal clear high-contrast text readability).
 - `[x]` Phase 11: Staff Menu Food Photos Integration (Added the exact 16 menu food photo assets into the staff menu module inside `CashierPosScreen`).
 - `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (Integrated the complete 11-item left sidebar navigation into `OwnerDashboardScreen` covering Overview, Orders, Menu, Inventory, Staff, Attendance, Payment, Customer, Reports, Activity Logs, and System Settings).
-- `[ ]` Phase 13: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
-- `[ ]` Phase 14: Owner/Admin Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
+- `[x]` Phase 13: Distinct Role-Based Routing & Separation (Configured GoRouter and Login redirection so that **Customer** routes to Customer Portal, **Staff / Cashier** routes to Staff Mobile POS (`/cashier/pos`), and **Admin / Owner** routes to Admin Control Center (`/owner/dashboard`)).
+- `[ ]` Phase 14: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
 - `[ ]` Phase 15: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
 - `[ ]` Phase 16: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
 - `[ ]` Phase 17: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).

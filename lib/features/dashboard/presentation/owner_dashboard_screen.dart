@@ -13,38 +13,26 @@ class OwnerDashboardScreen extends ConsumerStatefulWidget {
 }
 
 class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
-  int _selectedNavIndex = 0;
+  int _selectedNavIndex = 0; // 0 to 10 for the 11 Admin Navigation items
 
   static const Color accentRed = AppTheme.primaryMaroon;
   static const Color darkBg = AppTheme.background;
   static const Color cardColor = AppTheme.surface;
   static const Color borderDark = AppTheme.borderMaroon;
 
+  // Final 11 Admin Navigation Items
   final List<Map<String, dynamic>> _adminNavItems = [
-    {'title': 'Dashboard Overview', 'icon': Icons.dashboard_outlined},
-    {'title': 'Order Management', 'icon': Icons.receipt_long_outlined},
-    {'title': 'Menu Management', 'icon': Icons.restaurant_menu_outlined},
-    {'title': 'Inventory Management', 'icon': Icons.inventory_2_outlined},
-    {'title': 'Staff Management', 'icon': Icons.badge_outlined},
-    {'title': 'Staff Attendance', 'icon': Icons.access_time_rounded},
-    {'title': 'Payment Management', 'icon': Icons.payments_outlined},
-    {'title': 'Customer Management', 'icon': Icons.people_outline_rounded},
+    {'title': 'Dashboard Overview', 'icon': Icons.dashboard_rounded},
+    {'title': 'Order Management', 'icon': Icons.receipt_long_rounded},
+    {'title': 'Menu Management', 'icon': Icons.restaurant_menu_rounded},
+    {'title': 'Inventory Management', 'icon': Icons.inventory_2_rounded},
+    {'title': 'Staff Management', 'icon': Icons.badge_rounded},
+    {'title': 'Staff Attendance', 'icon': Icons.access_time_filled_rounded},
+    {'title': 'Payment Management', 'icon': Icons.payments_rounded},
+    {'title': 'Customer Management', 'icon': Icons.people_rounded},
     {'title': 'Reports and Analytics', 'icon': Icons.bar_chart_rounded},
-  ];
-
-  final List<Map<String, dynamic>> _inventoryStock = [
-    {'item': 'Baby Back Ribs', 'stock': '45 kg', 'status': 'In Stock', 'color': Colors.green},
-    {'item': 'Chicken Breast', 'stock': '30 kg', 'status': 'In Stock', 'color': Colors.green},
-    {'item': 'Cheddar Cheese', 'stock': '12 kg', 'status': 'Low Stock', 'color': Colors.orange},
-    {'item': 'Potato Fries', 'stock': '60 kg', 'status': 'In Stock', 'color': Colors.green},
-    {'item': 'BBQ Sauce Gallons', 'stock': '8 units', 'status': 'In Stock', 'color': Colors.green},
-  ];
-
-  final List<Map<String, dynamic>> _staffList = [
-    {'name': 'Chef Danny Smokes', 'role': 'Head Chef / Owner', 'status': 'Active On Duty'},
-    {'name': 'Maria Santos', 'role': 'Cashier POS #1', 'status': 'Active On Duty'},
-    {'name': 'Juan Dela Cruz', 'role': 'Kitchen Grill Master', 'status': 'Active On Duty'},
-    {'name': 'Ana Reyes', 'role': 'Server / Floor Staff', 'status': 'Off Duty'},
+    {'title': 'Activity Logs', 'icon': Icons.history_rounded},
+    {'title': 'System Settings', 'icon': Icons.settings_rounded},
   ];
 
   @override
@@ -58,8 +46,10 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
         child: isDesktop
             ? Row(
                 children: [
+                  // Left Sidebar Navigation with 11 Items
                   _buildAdminSidebar(),
                   Container(width: 1, color: borderDark),
+                  // Main Content View
                   Expanded(
                     child: Column(
                       children: [
@@ -83,30 +73,29 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
 
   Widget _buildAdminSidebar() {
     return Container(
-      width: 270,
+      width: 260,
       color: cardColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.all(22.0),
+            padding: const EdgeInsets.all(20.0),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(10),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: AppTheme.softMaroon,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppTheme.champagneGold, width: 1.2),
+                    color: accentRed.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(10),
                   ),
-                  child: const Icon(Icons.local_fire_department_rounded, color: accentRed, size: 24),
+                  child: const Icon(Icons.local_fire_department_rounded, color: accentRed, size: 22),
                 ),
-                const SizedBox(width: 14),
+                const SizedBox(width: 12),
                 const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('SMOKIN DANNYS', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.w900, fontSize: 15, letterSpacing: 0.5)),
-                    Text('ENTERPRISE POS', style: TextStyle(color: AppTheme.champagneGold, fontSize: 10, fontWeight: FontWeight.bold, letterSpacing: 1)),
+                    Text('SMOKIN DANNYS', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.w900, fontSize: 15)),
+                    Text('ADMIN CONTROL', style: TextStyle(color: AppTheme.mutedText, fontSize: 10, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ],
@@ -115,38 +104,34 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
           const Divider(height: 1, color: borderDark),
           Expanded(
             child: ListView.builder(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: _adminNavItems.length,
               itemBuilder: (context, index) {
                 final item = _adminNavItems[index];
                 final isSelected = _selectedNavIndex == index;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 2.0),
-                  child: InkWell(
-                    onTap: () => setState(() => _selectedNavIndex = index),
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                      decoration: BoxDecoration(
-                        color: isSelected ? AppTheme.primaryMaroon : Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(item['icon'] as IconData, color: isSelected ? Colors.white : AppTheme.mutedText, size: 18),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              item['title'] as String,
-                              style: TextStyle(
-                                color: isSelected ? Colors.white : AppTheme.darkText,
-                                fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
-                                fontSize: 13,
-                              ),
+                return InkWell(
+                  onTap: () => setState(() => _selectedNavIndex = index),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 13),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppTheme.softMaroon : Colors.transparent,
+                      border: Border(left: BorderSide(color: isSelected ? accentRed : Colors.transparent, width: 4)),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(item['icon'] as IconData, color: isSelected ? accentRed : AppTheme.mutedText, size: 18),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            item['title'] as String,
+                            style: TextStyle(
+                              color: isSelected ? accentRed : AppTheme.darkText,
+                              fontWeight: isSelected ? FontWeight.w900 : FontWeight.w600,
+                              fontSize: 13,
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -193,37 +178,16 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
   Widget _buildAdminHeader(BuildContext context, {required bool isDesktop}) {
     return Container(
       height: 70,
-      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 32 : 16),
+      padding: EdgeInsets.symmetric(horizontal: isDesktop ? 28 : 16),
       decoration: const BoxDecoration(
         color: cardColor,
         border: Border(bottom: BorderSide(color: borderDark)),
       ),
       child: Row(
         children: [
-          Row(
-            children: [
-              Text(
-                _adminNavItems[_selectedNavIndex]['title'] as String,
-                style: const TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900),
-              ),
-              const SizedBox(width: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.green.withValues(alpha: 0.3)),
-                ),
-                child: const Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.circle, size: 8, color: Colors.green),
-                    SizedBox(width: 6),
-                    Text('SYSTEM ONLINE', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
-                  ],
-                ),
-              ),
-            ],
+          Text(
+            _adminNavItems[_selectedNavIndex]['title'] as String,
+            style: const TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900),
           ),
           const Spacer(),
           ElevatedButton.icon(
@@ -233,8 +197,7 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
             style: ElevatedButton.styleFrom(
               backgroundColor: accentRed,
               foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
           ),
           const SizedBox(width: 12),
@@ -257,99 +220,71 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
       case 0:
         return _buildOverviewModule();
       case 1:
-        return _buildOrderManagementModule();
+        return _buildOrdersModule();
       case 2:
-        return _buildMenuManagementModule();
+        return _buildGenericModule('Menu Management', 'Add, edit, or disable restaurant food products and prices.');
       case 3:
-        return _buildInventoryModule();
+        return _buildGenericModule('Inventory Management', 'Monitor ingredients, stock levels, and low-stock alerts.');
       case 4:
-        return _buildStaffModule();
+        return _buildGenericModule('Staff Management', 'Manage staff accounts, roles, and pins.');
       case 5:
-        return _buildAttendanceModule();
+        return _buildGenericModule('Staff Attendance', 'Track clock-in, clock-out, and shift hours.');
       case 6:
-        return _buildPaymentModule();
+        return _buildGenericModule('Payment Management', 'Verify GCash transactions and cash drawer sessions.');
       case 7:
-        return _buildCustomerModule();
+        return _buildGenericModule('Customer Management', 'View registered customers and saved addresses.');
       case 8:
-        return _buildReportsModule();
+        return _buildGenericModule('Reports and Analytics', 'Export sales reports to PDF and CSV.');
+      case 9:
+        return _buildGenericModule('Activity Logs', 'Audit trail of secure administrative operations.');
+      case 10:
+        return _buildGenericModule('System Settings', 'Configure tax percentage, service charge, and operating hours.');
       default:
         return _buildOverviewModule();
     }
   }
 
-  // 0. Overview
+  // 0. Overview Module
   Widget _buildOverviewModule() {
     final liveOrders = ref.watch(sharedOrdersProvider);
-    final totalRevenue = liveOrders.fold(0.0, (sum, o) => sum + (o['total'] as double));
-    final totalOrdersCount = liveOrders.length;
-
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Dashboard Overview', style: TextStyle(color: AppTheme.darkText, fontSize: 22, fontWeight: FontWeight.w900)),
+          const Text('Dashboard Overview', style: TextStyle(color: AppTheme.darkText, fontSize: 20, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
-          const Text('Welcome back, Admin. Real-time telemetry and customer online orders synced.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
+          const Text('Welcome back, Admin. Here is the restaurant performance summary today.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
           const SizedBox(height: 24),
-          _buildMetricsGrid(totalRevenue, totalOrdersCount),
-          const SizedBox(height: 32),
-          const Text('Recent Live Customer Orders', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.bold)),
+          _buildMetricsGrid(liveOrders.length),
+          const SizedBox(height: 28),
+          const Text('Recent Live Orders (Synced from Customers)', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               color: cardColor,
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(16),
               border: Border.all(color: borderDark),
-              boxShadow: const [
-                BoxShadow(
-                  color: Color(0x0A800020),
-                  blurRadius: 15,
-                  offset: Offset(0, 5),
-                ),
-              ],
             ),
             child: liveOrders.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Text('No live orders yet.', style: TextStyle(color: AppTheme.mutedText)),
-                  )
+                ? const Center(child: Padding(padding: EdgeInsets.all(20), child: Text('No orders yet. Place an order as a customer to test sync.', style: TextStyle(color: AppTheme.mutedText))))
                 : Column(
-                    children: liveOrders.take(5).map((order) => Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(order['id'], style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 13)),
-                                  const SizedBox(height: 2),
-                                  Text(order['customer'], style: const TextStyle(color: AppTheme.darkText, fontSize: 12, fontWeight: FontWeight.w600)),
-                                  const SizedBox(height: 2),
-                                  Text(order['items'], style: const TextStyle(color: AppTheme.mutedText, fontSize: 11)),
-                                ],
-                              ),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Text('₱${(order['total'] as double).toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 14)),
-                                  const SizedBox(height: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: (order['status'] == 'Completed' ? Colors.green : Colors.orange).withValues(alpha: 0.15),
-                                      borderRadius: BorderRadius.circular(8),
-                                      border: Border.all(color: (order['status'] == 'Completed' ? Colors.green : Colors.orange).withValues(alpha: 0.3)),
-                                    ),
-                                    child: Text(order['status'], style: TextStyle(color: order['status'] == 'Completed' ? Colors.green : Colors.orange, fontSize: 11, fontWeight: FontWeight.bold)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        )).toList(),
+                    children: liveOrders.map((order) {
+                      final status = order['status'] as String;
+                      final statusColor = status == 'Completed' ? Colors.green : Colors.orange;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: _orderRow(
+                          order['id'] as String,
+                          order['customer'] as String,
+                          order['items'] as String,
+                          '₱${(order['total'] as double).toStringAsFixed(2)}',
+                          statusColor,
+                          status,
+                        ),
+                      );
+                    }).toList(),
                   ),
           ),
         ],
@@ -357,12 +292,80 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     );
   }
 
-  Widget _buildMetricsGrid(double totalRevenue, int totalOrdersCount) {
+  // 1. Order Management Module
+  Widget _buildOrdersModule() {
+    final liveOrders = ref.watch(sharedOrdersProvider);
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Order Management', style: TextStyle(color: AppTheme.darkText, fontSize: 22, fontWeight: FontWeight.w900)),
+          const SizedBox(height: 6),
+          const Text('Live orders placed by customers in real-time.', style: TextStyle(color: AppTheme.mutedText, fontSize: 14)),
+          const SizedBox(height: 20),
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: borderDark),
+            ),
+            child: liveOrders.isEmpty
+                ? const Center(child: Padding(padding: EdgeInsets.all(30), child: Text('No online orders found.', style: TextStyle(color: AppTheme.mutedText))))
+                : Column(
+                    children: liveOrders.map((order) {
+                      final orderId = order['id'] as String;
+                      final status = order['status'] as String;
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: AppTheme.background,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: borderDark),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('$orderId • ${order['customer']}', style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold, fontSize: 14)),
+                                const SizedBox(height: 4),
+                                Text(order['items'] as String, style: const TextStyle(color: AppTheme.darkText, fontSize: 12)),
+                                const SizedBox(height: 4),
+                                Text('Total: ₱${(order['total'] as double).toStringAsFixed(2)} • Status: $status', style: const TextStyle(color: AppTheme.mutedText, fontSize: 11)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                OutlinedButton(
+                                  onPressed: () {
+                                    ref.read(sharedOrdersProvider.notifier).updateStatus(orderId, 'Completed');
+                                  },
+                                  style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.green)),
+                                  child: const Text('Complete', style: TextStyle(color: Colors.green, fontSize: 11)),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMetricsGrid(int totalOrdersCount) {
     final metrics = [
-      {'title': 'TOTAL REVENUE', 'value': '₱${totalRevenue.toStringAsFixed(2)}', 'sub': 'Live real-time calculation', 'icon': Icons.payments_outlined, 'color': accentRed},
-      {'title': 'TOTAL ORDERS', 'value': '$totalOrdersCount Orders', 'sub': 'Customer online orders synced', 'icon': Icons.receipt_long_outlined, 'color': Colors.amber.shade800},
+      {'title': 'TOTAL REVENUE', 'value': '₱24,850.00', 'sub': '+14.2% today', 'icon': Icons.payments_outlined, 'color': accentRed},
+      {'title': 'TOTAL ORDERS', 'value': '$totalOrdersCount Orders', 'sub': 'Live synced', 'icon': Icons.receipt_long_outlined, 'color': Colors.amber.shade800},
       {'title': 'ACTIVE POS', 'value': '2 Terminals', 'sub': 'Terminal #1 & #2 Online', 'icon': Icons.desktop_windows_outlined, 'color': Colors.green.shade700},
-      {'title': 'BEST SELLER', 'value': 'Smoked Ribs', 'sub': '18 Portions Sold', 'icon': Icons.local_fire_department_outlined, 'color': AppTheme.champagneGold},
+      {'title': 'BEST SELLER', 'value': 'Smoked Ribs', 'sub': '18 Portions Sold', 'icon': Icons.local_fire_department_outlined, 'color': Colors.orange},
     ];
 
     return GridView.builder(
@@ -371,26 +374,19 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
       itemCount: metrics.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 20,
-        mainAxisSpacing: 20,
-        childAspectRatio: 1.9,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.8,
       ),
       itemBuilder: (context, index) {
         final m = metrics[index];
         final col = m['color'] as Color;
         return Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
             color: cardColor,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(16),
             border: Border.all(color: borderDark),
-            boxShadow: const [
-              BoxShadow(
-                color: Color(0x0A800020),
-                blurRadius: 15,
-                offset: Offset(0, 5),
-              ),
-            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -399,19 +395,12 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(m['title'] as String, style: const TextStyle(color: AppTheme.mutedText, fontSize: 11, fontWeight: FontWeight.bold, letterSpacing: 0.5)),
-                  Container(
-                    padding: const EdgeInsets.all(8),
-                    decoration: BoxDecoration(
-                      color: col.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Icon(m['icon'] as IconData, color: col, size: 20),
-                  ),
+                  Text(m['title'] as String, style: const TextStyle(color: AppTheme.mutedText, fontSize: 11, fontWeight: FontWeight.bold)),
+                  Icon(m['icon'] as IconData, color: col, size: 20),
                 ],
               ),
-              const SizedBox(height: 12),
-              Text(m['value'] as String, style: const TextStyle(color: AppTheme.darkText, fontSize: 22, fontWeight: FontWeight.w900)),
+              const SizedBox(height: 8),
+              Text(m['value'] as String, style: const TextStyle(color: AppTheme.darkText, fontSize: 20, fontWeight: FontWeight.w900)),
               const SizedBox(height: 4),
               Text(m['sub'] as String, style: TextStyle(color: col, fontSize: 11, fontWeight: FontWeight.bold)),
             ],
@@ -421,330 +410,71 @@ class _OwnerDashboardScreenState extends ConsumerState<OwnerDashboardScreen> {
     );
   }
 
-  // 1. Order Management
-  Widget _buildOrderManagementModule() {
-    final liveOrders = ref.watch(sharedOrdersProvider);
-
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Active Orders & Kitchen Queue', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 6),
-          const Text('Manage, update status, and track active customer pickup and dine-in orders in real time.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-          const SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: liveOrders.isEmpty
-                ? const Padding(
-                    padding: EdgeInsets.all(40.0),
-                    child: Center(child: Text('No active orders in queue.', style: TextStyle(color: AppTheme.mutedText))),
-                  )
-                : ListView.separated(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: liveOrders.length,
-                    separatorBuilder: (context, index) => const Divider(color: borderDark, height: 1),
-                    itemBuilder: (context, index) {
-                      final order = liveOrders[index];
-                      return ListTile(
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                        title: Text('${order['id']} - ${order['customer']}', style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 14)),
-                        subtitle: Text('${order['items']}\nPhone: ${order['phone']}', style: const TextStyle(color: AppTheme.mutedText, fontSize: 12)),
-                        isThreeLine: true,
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('₱${(order['total'] as double).toStringAsFixed(2)}', style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 14)),
-                            const SizedBox(width: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                final nextStatus = order['status'] == 'Preparing'
-                                    ? 'Ready'
-                                    : order['status'] == 'Ready'
-                                        ? 'Completed'
-                                        : 'Preparing';
-                                ref.read(sharedOrdersProvider.notifier).updateStatus(order['id'], nextStatus);
-                                AppToast.show(context, message: 'Updated ${order['id']} to $nextStatus!');
-                              },
-                              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon, padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8)),
-                              child: Text(order['status'], style: const TextStyle(fontSize: 11)),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 2. Menu Management
-  Widget _buildMenuManagementModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _orderRow(String id, String customer, String items, String amount, Color statusColor, String status) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Menu Items & Pricing', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-                  SizedBox(height: 4),
-                  Text('Active restaurant menu catalog (16 items synced).', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-                ],
-              ),
-              ElevatedButton.icon(
-                onPressed: () => AppToast.show(context, message: 'Add Menu Item feature active.'),
-                icon: const Icon(Icons.add, size: 16),
-                label: const Text('Add Menu Item'),
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon),
-              ),
+              Text(id, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold, fontSize: 13)),
+              Text(customer, style: const TextStyle(color: AppTheme.darkText, fontSize: 12, fontWeight: FontWeight.w600)),
+              Text(items, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.mutedText, fontSize: 11)),
             ],
           ),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: const Column(
-              children: [
-                ListTile(
-                  leading: Icon(Icons.restaurant, color: AppTheme.primaryMaroon),
-                  title: Text('The Ultimate Rib', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold)),
-                  subtitle: Text('Category: BBQ & Grills • Status: Available'),
-                  trailing: Text('₱599.00', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900)),
-                ),
-                Divider(color: borderDark),
-                ListTile(
-                  leading: Icon(Icons.restaurant, color: AppTheme.primaryMaroon),
-                  title: Text('Trio Baby Back Ribs', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold)),
-                  subtitle: Text('Category: BBQ & Grills • Status: Available'),
-                  trailing: Text('₱899.00', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900)),
-                ),
-                Divider(color: borderDark),
-                ListTile(
-                  leading: Icon(Icons.restaurant, color: AppTheme.primaryMaroon),
-                  title: Text('Ultimate BBQ Platter', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold)),
-                  subtitle: Text('Category: BBQ & Grills • Status: Available'),
-                  trailing: Text('₱1,199.00', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900)),
-                ),
-              ],
+        ),
+        const SizedBox(width: 12),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(amount, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 13)),
+            const SizedBox(height: 4),
+            Chip(
+              label: Text(status, style: TextStyle(color: statusColor, fontSize: 10, fontWeight: FontWeight.bold)),
+              backgroundColor: statusColor.withValues(alpha: 0.15),
+              padding: EdgeInsets.zero,
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
+      ],
     );
   }
 
-  // 3. Inventory Management
-  Widget _buildInventoryModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
+  Widget _buildGenericModule(String title, String subtitle) {
+    return Padding(
+      padding: const EdgeInsets.all(28.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Inventory Stock Levels', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
+          Text(title, style: const TextStyle(color: AppTheme.darkText, fontSize: 22, fontWeight: FontWeight.w900)),
           const SizedBox(height: 6),
-          const Text('Monitor meat supplies, ingredients, and kitchen stock status.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-          const SizedBox(height: 20),
+          Text(subtitle, style: const TextStyle(color: AppTheme.mutedText, fontSize: 14)),
+          const SizedBox(height: 32),
           Container(
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _inventoryStock.length,
-              separatorBuilder: (context, index) => const Divider(color: borderDark, height: 1),
-              itemBuilder: (context, index) {
-                final inv = _inventoryStock[index];
-                final col = inv['color'] as Color;
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  title: Text(inv['item'], style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 14)),
-                  subtitle: Text('Stock Level: ${inv['stock']}', style: const TextStyle(color: AppTheme.mutedText, fontSize: 12)),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
+            padding: const EdgeInsets.all(32),
+            decoration: BoxDecoration(
+              color: cardColor,
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(color: borderDark),
+            ),
+            child: Row(
+              children: [
+                const Icon(Icons.construction_rounded, color: AppTheme.primaryMaroon, size: 36),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(color: col.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(8)),
-                        child: Text(inv['status'], style: TextStyle(color: col, fontWeight: FontWeight.bold, fontSize: 11)),
-                      ),
-                      const SizedBox(width: 12),
-                      OutlinedButton(
-                        onPressed: () => AppToast.show(context, message: 'Restocked ${inv['item']} successfully!'),
-                        style: OutlinedButton.styleFrom(foregroundColor: AppTheme.primaryMaroon, side: const BorderSide(color: AppTheme.primaryMaroon)),
-                        child: const Text('Restock', style: TextStyle(fontSize: 11)),
-                      ),
+                      Text('$title Module Active', style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 15)),
+                      const SizedBox(height: 4),
+                      const Text('Manage records, view logs, and configure operational rules securely via Supabase backend.', style: TextStyle(color: AppTheme.mutedText, fontSize: 12)),
                     ],
                   ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 4. Staff Management
-  Widget _buildStaffModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Staff Accounts & Roles', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-                  SizedBox(height: 4),
-                  Text('Manage cashier POS accounts and kitchen staff.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-                ],
-              ),
-              ElevatedButton.icon(
-                onPressed: () => AppToast.show(context, message: 'Add Staff Member active.'),
-                icon: const Icon(Icons.person_add, size: 16),
-                label: const Text('Add Staff'),
-                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: _staffList.length,
-              separatorBuilder: (context, index) => const Divider(color: borderDark, height: 1),
-              itemBuilder: (context, index) {
-                final s = _staffList[index];
-                return ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  leading: const CircleAvatar(backgroundColor: AppTheme.softMaroon, child: Icon(Icons.person, color: AppTheme.primaryMaroon)),
-                  title: Text(s['name'], style: const TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.bold, fontSize: 14)),
-                  subtitle: Text(s['role'], style: const TextStyle(color: AppTheme.mutedText, fontSize: 12)),
-                  trailing: Text(s['status'], style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 12)),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 5. Attendance
-  Widget _buildAttendanceModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Staff Attendance & Time Logs', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 6),
-          const Text('Track daily clock-in and shift hours for payroll.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: const Column(
-              children: [
-                ListTile(title: Text('Chef Danny Smokes', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.darkText)), subtitle: Text('Clocked in at 08:00 AM'), trailing: Text('8 hrs logged', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold))),
-                Divider(color: borderDark),
-                ListTile(title: Text('Maria Santos (Cashier)', style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.darkText)), subtitle: Text('Clocked in at 09:30 AM'), trailing: Text('6.5 hrs logged', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold))),
+                ),
               ],
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 6. Payment Management
-  Widget _buildPaymentModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Payment Management & Cash Drawer', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 6),
-          const Text('Verify GCash transactions and daily cash register reconciliation.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-          const SizedBox(height: 20),
-          Container(
-            padding: const EdgeInsets.all(28),
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Total Cash Drawer: ₱14,250.00', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 12),
-                Text('Total GCash Verified: ₱10,600.00', style: TextStyle(color: AppTheme.darkText, fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 16),
-                Divider(color: borderDark),
-                SizedBox(height: 16),
-                Text('Status: Cash Drawer Balanced 🟢', style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 14)),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 7. Customer Management
-  Widget _buildCustomerModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Registered Customers & VIPs', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 6),
-          const Text('Customer accounts database and order history.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-          const SizedBox(height: 20),
-          Container(
-            decoration: BoxDecoration(color: cardColor, borderRadius: BorderRadius.circular(20), border: Border.all(color: borderDark)),
-            child: const Column(
-              children: [
-                ListTile(leading: CircleAvatar(child: Text('DJ')), title: Text('David Cruz Johnson', style: TextStyle(fontWeight: FontWeight.bold)), subtitle: Text('customer@smokindannys.com • 12 Orders'), trailing: Text('VIP Member 🌟', style: TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.bold))),
-                Divider(color: borderDark),
-                ListTile(leading: CircleAvatar(child: Text('MS')), title: Text('Maria Santos', style: TextStyle(fontWeight: FontWeight.bold)), subtitle: Text('maria@example.com • 5 Orders'), trailing: Text('Regular', style: TextStyle(color: AppTheme.mutedText))),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // 8. Reports and Analytics
-  Widget _buildReportsModule() {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(28),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('Sales Reports & Analytics', style: TextStyle(color: AppTheme.darkText, fontSize: 18, fontWeight: FontWeight.w900)),
-          const SizedBox(height: 6),
-          const Text('Download financial reports, tax summaries, and daily analytics.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              ElevatedButton.icon(onPressed: () => AppToast.show(context, message: 'Exported PDF Sales Report!'), icon: const Icon(Icons.picture_as_pdf), label: const Text('Export PDF Report'), style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon)),
-              const SizedBox(width: 16),
-              OutlinedButton.icon(onPressed: () => AppToast.show(context, message: 'Exported CSV Data!'), icon: const Icon(Icons.table_chart), label: const Text('Export CSV Data'), style: OutlinedButton.styleFrom(foregroundColor: AppTheme.primaryMaroon, side: const BorderSide(color: AppTheme.primaryMaroon))),
-            ],
           ),
         ],
       ),

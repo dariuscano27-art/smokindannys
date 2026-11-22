@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../auth/presentation/auth_provider.dart';
+import '../../cart/presentation/shared_orders_provider.dart';
 import '../../../core/theme/app_theme.dart';
 
 class CashierPosScreen extends ConsumerStatefulWidget {
@@ -23,31 +24,120 @@ class _CashierPosScreenState extends ConsumerState<CashierPosScreen> {
   final List<Map<String, dynamic>> _orderCart = [];
   double _cashReceived = 0.0;
 
-  // Mock Menu Items
+  // Exact 16 Menu Items with Photo Assets for Staff POS
   final List<Map<String, dynamic>> _menuItems = [
-    {'id': '1', 'name': 'The Ultimate Rib', 'price': 599.00, 'category': 'BBQ & Grills', 'image_url': 'Menu_Food_Photos/01_The_Ultimate_Rib.jpg'},
-    {'id': '2', 'name': 'Trio Baby Back Ribs', 'price': 899.00, 'category': 'BBQ & Grills', 'image_url': 'Menu_Food_Photos/02_Trio_Baby_Back_Ribs.jpg'},
-    {'id': '3', 'name': 'Ultimate BBQ Platter', 'price': 1199.00, 'category': 'BBQ & Grills', 'image_url': 'Menu_Food_Photos/03_Ultimate_BBQ_Platter.jpg'},
-    {'id': '4', 'name': 'Italian Grilled Chicken', 'price': 349.00, 'category': 'Chicken', 'image_url': 'Menu_Food_Photos/04_Italian_Grilled_Chicken.jpg'},
-    {'id': '5', 'name': 'Chicken Barbecue', 'price': 269.00, 'category': 'Chicken', 'image_url': 'Menu_Food_Photos/05_Chicken_Barbecue_with_Java_Rice_and_Atchara.jpg'},
-    {'id': '6', 'name': 'Pizza & Pasta Sisig', 'price': 399.00, 'category': 'Pizza', 'image_url': 'Menu_Food_Photos/06_Pizza_and_Pasta_Sisig.jpg'},
-    {'id': '7', 'name': 'Pizza Canton', 'price': 249.00, 'category': 'Pasta', 'image_url': 'Menu_Food_Photos/07_Pizza_Canton.jpg'},
-    {'id': '8', 'name': 'Sisig Tuna Pasta', 'price': 289.00, 'category': 'Pasta', 'image_url': 'Menu_Food_Photos/08_Sisig_Tuna_Pasta.jpg'},
-    {'id': '9', 'name': 'Buffalo Wings', 'price': 259.00, 'category': 'Chicken', 'image_url': 'Menu_Food_Photos/09_Buffalo_Wings.jpg'},
-    {'id': '10', 'name': 'Garlic Parmesan Wings', 'price': 269.00, 'category': 'Chicken', 'image_url': 'Menu_Food_Photos/10_Garlic_Parmesan_Wings.jpg'},
-    {'id': '11', 'name': 'Chili Con Nachos', 'price': 229.00, 'category': 'Sides', 'image_url': 'Menu_Food_Photos/11_Chili_Con_Nachos.jpg'},
-    {'id': '12', 'name': 'Crispy Fries', 'price': 129.00, 'category': 'Sides', 'image_url': 'Menu_Food_Photos/12_Crispy_Fries.jpg'},
-    {'id': '13', 'name': 'Tapa Silog', 'price': 199.00, 'category': 'All-Day Breakfast', 'image_url': 'Menu_Food_Photos/13_Tapa_Silog.jpg'},
-    {'id': '14', 'name': 'Tocilog', 'price': 189.00, 'category': 'All-Day Breakfast', 'image_url': 'Menu_Food_Photos/14_Tocilog.jpg'},
-    {'id': '15', 'name': 'Spam & Eggs Skillet', 'price': 219.00, 'category': 'All-Day Breakfast', 'image_url': 'Menu_Food_Photos/15_Spam_and_Eggs_Skillet.jpg'},
-    {'id': '16', 'name': 'Suman Sundae', 'price': 149.00, 'category': 'Desserts', 'image_url': 'Menu_Food_Photos/16_Suman_Sundae.jpg'},
-  ];
-
-  // Mock Online Orders (Confirmation Queue)
-  final List<Map<String, dynamic>> _onlineOrders = [
-    {'id': '#SD-2041', 'customer': 'Maria Santos', 'items': 'The Ultimate Rib x2, Fries x1', 'total': 1327.00, 'status': 'Pending Confirmation', 'type': 'Delivery'},
-    {'id': '#SD-2040', 'customer': 'Juan Dela Cruz', 'items': 'Trio Baby Back Ribs x1', 'total': 899.00, 'status': 'Preparing', 'type': 'Pickup'},
-    {'id': '#SD-2039', 'customer': 'Ana Reyes', 'items': 'Italian Grilled Chicken x2', 'total': 698.00, 'status': 'Ready for Pickup', 'type': 'Pickup'},
+    {
+      'id': '1',
+      'name': 'The Ultimate Rib',
+      'price': 599.00,
+      'category': 'BBQ & Grills',
+      'image_url': 'Menu_Food_Photos/01_The_Ultimate_Rib.jpg',
+    },
+    {
+      'id': '2',
+      'name': 'Trio Baby Back Ribs',
+      'price': 899.00,
+      'category': 'BBQ & Grills',
+      'image_url': 'Menu_Food_Photos/02_Trio_Baby_Back_Ribs.jpg',
+    },
+    {
+      'id': '3',
+      'name': 'Ultimate BBQ Platter',
+      'price': 1199.00,
+      'category': 'BBQ & Grills',
+      'image_url': 'Menu_Food_Photos/03_Ultimate_BBQ_Platter.jpg',
+    },
+    {
+      'id': '4',
+      'name': 'Italian Grilled Chicken',
+      'price': 349.00,
+      'category': 'Chicken',
+      'image_url': 'Menu_Food_Photos/04_Italian_Grilled_Chicken.jpg',
+    },
+    {
+      'id': '5',
+      'name': 'Chicken Barbecue',
+      'price': 269.00,
+      'category': 'Chicken',
+      'image_url': 'Menu_Food_Photos/05_Chicken_Barbecue_with_Java_Rice_and_Atchara.jpg',
+    },
+    {
+      'id': '6',
+      'name': 'Pizza & Pasta Sisig',
+      'price': 399.00,
+      'category': 'Pizza',
+      'image_url': 'Menu_Food_Photos/06_Pizza_and_Pasta_Sisig.jpg',
+    },
+    {
+      'id': '7',
+      'name': 'Pizza Canton',
+      'price': 249.00,
+      'category': 'Pasta',
+      'image_url': 'Menu_Food_Photos/07_Pizza_Canton.jpg',
+    },
+    {
+      'id': '8',
+      'name': 'Sisig Tuna Pasta',
+      'price': 289.00,
+      'category': 'Pasta',
+      'image_url': 'Menu_Food_Photos/08_Sisig_Tuna_Pasta.jpg',
+    },
+    {
+      'id': '9',
+      'name': 'Buffalo Wings',
+      'price': 259.00,
+      'category': 'Chicken',
+      'image_url': 'Menu_Food_Photos/09_Buffalo_Wings.jpg',
+    },
+    {
+      'id': '10',
+      'name': 'Garlic Parmesan Wings',
+      'price': 269.00,
+      'category': 'Chicken',
+      'image_url': 'Menu_Food_Photos/10_Garlic_Parmesan_Wings.jpg',
+    },
+    {
+      'id': '11',
+      'name': 'Chili Con Nachos',
+      'price': 229.00,
+      'category': 'Sides',
+      'image_url': 'Menu_Food_Photos/11_Chili_Con_Nachos.jpg',
+    },
+    {
+      'id': '12',
+      'name': 'Crispy Fries',
+      'price': 129.00,
+      'category': 'Sides',
+      'image_url': 'Menu_Food_Photos/12_Crispy_Fries.jpg',
+    },
+    {
+      'id': '13',
+      'name': 'Tapa Silog',
+      'price': 199.00,
+      'category': 'All-Day Breakfast',
+      'image_url': 'Menu_Food_Photos/13_Tapa_Silog.jpg',
+    },
+    {
+      'id': '14',
+      'name': 'Tocilog',
+      'price': 189.00,
+      'category': 'All-Day Breakfast',
+      'image_url': 'Menu_Food_Photos/14_Tocilog.jpg',
+    },
+    {
+      'id': '15',
+      'name': 'Spam & Eggs Skillet',
+      'price': 219.00,
+      'category': 'All-Day Breakfast',
+      'image_url': 'Menu_Food_Photos/15_Spam_and_Eggs_Skillet.jpg',
+    },
+    {
+      'id': '16',
+      'name': 'Suman Sundae',
+      'price': 149.00,
+      'category': 'Desserts',
+      'image_url': 'Menu_Food_Photos/16_Suman_Sundae.jpg',
+    },
   ];
 
   // Mock Transaction History
@@ -707,84 +797,83 @@ class _CashierPosScreenState extends ConsumerState<CashierPosScreen> {
     );
   }
 
-  // 4. ONLINE ORDERS MODULE (CONFIRMATION)
+  // 4. ONLINE ORDERS MODULE (CONFIRMATION) WATCHING SHARED ORDERS
   Widget _buildOnlineOrdersModule() {
+    final liveOrders = ref.watch(sharedOrdersProvider);
     return Padding(
       padding: const EdgeInsets.all(24.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Confirmation of Online Orders', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.w900, fontSize: 18)),
+          const Text('Confirmation of Online Orders (Synced from Customer Cart)', style: TextStyle(color: AppTheme.darkText, fontWeight: FontWeight.w900, fontSize: 18)),
           const SizedBox(height: 4),
-          const Text('Accept or update customer orders placed via web portal.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
+          const Text('Accept or update customer orders placed via web portal in real-time.', style: TextStyle(color: AppTheme.mutedText, fontSize: 13)),
           const SizedBox(height: 16),
           Expanded(
-            child: ListView.separated(
-              itemCount: _onlineOrders.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final order = _onlineOrders[index];
-                return Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppTheme.borderMaroon),
+            child: liveOrders.isEmpty
+                ? const Center(child: Text('No online customer orders yet.', style: TextStyle(color: AppTheme.mutedText)))
+                : ListView.separated(
+                    itemCount: liveOrders.length,
+                    separatorBuilder: (context, index) => const SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final order = liveOrders[index];
+                      final orderId = order['id'] as String;
+                      final status = order['status'] as String;
+                      return Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: AppTheme.surface,
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: AppTheme.borderMaroon),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(orderId, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 16)),
+                                Chip(
+                                  label: Text(status, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                  backgroundColor: AppTheme.softMaroon,
+                                  labelStyle: const TextStyle(color: AppTheme.primaryMaroon),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Text('Customer / Ref: ${order['customer']}', style: const TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.bold)),
+                            Text('Items: ${order['items']}', style: const TextStyle(color: AppTheme.mutedText, fontSize: 12)),
+                            const SizedBox(height: 12),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text('₱${(order['total'] as double).toStringAsFixed(2)} (${order['type']})', style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 14)),
+                                Row(
+                                  children: [
+                                    OutlinedButton(
+                                      onPressed: () {
+                                        ref.read(sharedOrdersProvider.notifier).updateStatus(orderId, 'Cancelled');
+                                      },
+                                      style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
+                                      child: const Text('Reject', style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold)),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        ref.read(sharedOrdersProvider.notifier).updateStatus(orderId, 'Preparing');
+                                      },
+                                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon, foregroundColor: Colors.white),
+                                      child: const Text('Accept & Prepare', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(order['id'] as String, style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 16)),
-                          Chip(
-                            label: Text(order['status'] as String, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
-                            backgroundColor: AppTheme.softMaroon,
-                            labelStyle: const TextStyle(color: AppTheme.primaryMaroon),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text('Customer: ${order['customer']}', style: const TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.bold)),
-                      Text('Items: ${order['items']}', style: const TextStyle(color: AppTheme.mutedText, fontSize: 12)),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('₱${(order['total'] as double).toStringAsFixed(2)} (${order['type']})', style: const TextStyle(color: AppTheme.primaryMaroon, fontWeight: FontWeight.w900, fontSize: 14)),
-                          Row(
-                            children: [
-                              OutlinedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _onlineOrders[index]['status'] = 'Cancelled';
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order rejected/cancelled.')));
-                                },
-                                style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
-                                child: const Text('Reject', style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold)),
-                              ),
-                              const SizedBox(width: 8),
-                              ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _onlineOrders[index]['status'] = 'Preparing';
-                                  });
-                                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Order accepted & moved to Kitchen Preparation!'), backgroundColor: Colors.green));
-                                },
-                                style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryMaroon, foregroundColor: Colors.white),
-                                child: const Text('Accept & Prepare', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
           ),
         ],
       ),
