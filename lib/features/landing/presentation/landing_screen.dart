@@ -41,6 +41,104 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
     }
   }
 
+  void _showPortalSelectionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.surface,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        title: const Column(
+          children: [
+            Icon(Icons.outdoor_grill_rounded, size: 36, color: AppTheme.primaryMaroon),
+            SizedBox(height: 12),
+            Text(
+              'SELECT PORTAL',
+              style: TextStyle(
+                color: AppTheme.primaryMaroon,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 1,
+              ),
+            ),
+            SizedBox(height: 4),
+            Text(
+              'Choose your role to log in or register',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: AppTheme.mutedText, fontSize: 12),
+            ),
+          ],
+        ),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 360),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // 1. Customer Portal Button
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push('/login');
+                },
+                icon: const Icon(Icons.person_outline, size: 18),
+                label: const Text('Customer Portal (Log In / Register)'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.primaryMaroon,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 2. Admin Portal Button
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push('/admin/login');
+                },
+                icon: const Icon(Icons.admin_panel_settings_outlined, size: 18, color: AppTheme.primaryMaroon),
+                label: const Text('Admin / Owner Portal', style: TextStyle(color: AppTheme.primaryMaroon)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppTheme.primaryMaroon, width: 1.5),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              // 3. Staff / POS Portal Button
+              OutlinedButton.icon(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push('/login'); // or staff login
+                },
+                icon: const Icon(Icons.point_of_sale_outlined, size: 18, color: AppTheme.primaryMaroon),
+                label: const Text('Staff / Cashier POS', style: TextStyle(color: AppTheme.primaryMaroon)),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppTheme.primaryMaroon, width: 1.5),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          Center(
+            child: TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel', style: TextStyle(color: AppTheme.mutedText, fontWeight: FontWeight.bold)),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -196,26 +294,20 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           ),
           const SizedBox(width: 8),
           ElevatedButton(
-            onPressed: () => context.push('/login'),
+            onPressed: () => _showPortalSelectionDialog(context),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
               foregroundColor: AppTheme.primaryMaroon,
               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
             ),
-            child: const Text('Customer Log In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+            child: const Text('Login / Register', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
           ),
           const SizedBox(width: 24),
         ] else ...[
-          IconButton(
-            icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
-            onPressed: () {
-              _checkAuthAndProceed(() {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Your Cart is currently empty.')),
-                );
-              });
-            },
+          TextButton(
+            onPressed: () => _showPortalSelectionDialog(context),
+            child: const Text('Login / Register', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
           ),
           const SizedBox(width: 8),
         ],

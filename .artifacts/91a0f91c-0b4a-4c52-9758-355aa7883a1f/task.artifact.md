@@ -7,7 +7,7 @@
 - `[x]` Phase 5: Live Supabase Backend Connection (`https://ngwxonkfjzsmibwdmpmx.supabase.co`) & GitHub Sync.
 - `[x]` Phase 6: Staff Mobile POS & Dashboard App Optimization (Dedicated Android Mobile App UI matching the Chrome desktop theme, touch-friendly POS grid, live orders queue, and staff profile with zero analysis errors).
 - `[x]` Phase 7: Layout & Pixel Overflow Optimization (Refactored `LandingScreen` and menu grid to use responsive `GridView` containers, removing all horizontal and vertical pixel overflow issues).
-- `[x]` Phase 8: Registration Form Validation & Character Limits (Added strict client-side validation and maximum character limits `maxLength` for First Name, Middle Name, Surname, Email, Phone, and Password fields).
+- `[x]` Phase 8: Registration Validation & Password Strength Meter (Updated First, Middle, and Last Name limits to **50 characters**; Contact Number to **exact 11 digits** with numbers only; and added a real-time **Weak / Good / Strong password strength meter**).
 - `[ ]` Phase 9: Real-time Order Processing & Status Tracking (Supabase Realtime, status history).
 - `[ ]` Phase 10: Owner Dashboard & Analytics (fl_chart sales reports, order monitoring, inventory stock alerts).
 - `[ ]` Phase 11: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
