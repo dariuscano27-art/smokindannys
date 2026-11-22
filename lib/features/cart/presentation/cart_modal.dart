@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import 'cart_provider.dart';
+import 'shared_orders_provider.dart';
 
 void showCartModal(BuildContext context, WidgetRef ref) {
   showGeneralDialog(
@@ -602,6 +603,17 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
             child: ElevatedButton(
               onPressed: () {
                 final orderId = '#SD-${1045 + DateTime.now().second}';
+                final itemsSummary = cartItems.map((i) => '${i.quantity}x ${i.name}').join(', ');
+
+                ref.read(sharedOrdersProvider.notifier).addOrder(
+                  orderId: orderId,
+                  customerName: _tableOrAddressController.text,
+                  itemsSummary: itemsSummary,
+                  total: totalPrice,
+                  orderType: _diningOption,
+                  phone: _phoneController.text,
+                );
+
                 setState(() {
                   _confirmedOrderId = orderId;
                   _currentStep = 3;

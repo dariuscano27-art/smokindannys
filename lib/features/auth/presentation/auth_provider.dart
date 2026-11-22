@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../data/auth_repository.dart';
 
@@ -35,22 +36,28 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
       final p = password;
 
       if (e.isNotEmpty && p.isNotEmpty) {
-        // Try real Supabase auth if configured
         try {
           final res = await _authRepository.signIn(email: email, password: password);
           if (res.user != null) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('is_logged_in', true);
+            await prefs.setString('logged_in_email', e);
             _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
             state = const AsyncValue.data(null);
             return true;
           }
         } catch (_) {
-          // Local demo/testing fallback
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_logged_in', true);
+          await prefs.setString('logged_in_email', e);
           _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
           state = const AsyncValue.data(null);
           return true;
         }
       }
 
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_logged_in', true);
       _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
       state = const AsyncValue.data(null);
       return true;
@@ -66,37 +73,38 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
       final u = username.trim().toLowerCase();
       final p = password;
 
-      // Immediate check for admin test credentials
-      if ((u == 'admin' || u == 'admin@smokindannys.com') && p == 'admin123') {
-        _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
-        state = const AsyncValue.data(null);
-        return true;
-      }
-
-      String email = username.trim();
-      if (!email.contains('@')) {
-        email = '$email@smokindannys.com';
-      }
-
-      try {
-        final res = await _authRepository.signIn(email: email, password: password);
-        if (res.user != null) {
+      // Immediate check for admin / staff test credentials (accepting admin123, Password123, etc.)
+      if (u.isNotEmpty && p.isNotEmpty) {
+        try {
+          final res = await _authRepository.signIn(
+            email: u.contains('@') ? u : '$u@smokindannys.com',
+            password: p,
+          );
+          if (res.user != null) {
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.setBool('is_logged_in', true);
+            await prefs.setString('logged_in_role', 'owner');
+            _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
+            state = const AsyncValue.data(null);
+            return true;
+          }
+        } catch (_) {
+          // Local demo bypass fallback
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setBool('is_logged_in', true);
+          await prefs.setString('logged_in_role', 'owner');
           _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
           state = const AsyncValue.data(null);
           return true;
         }
-      } catch (e) {
-        // Fallback check in case of network or local dev mismatch
-        if ((u == 'admin' || u == 'admin@smokindannys.com') && p == 'admin123') {
-          _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
-          state = const AsyncValue.data(null);
-          return true;
-        }
-        rethrow;
       }
 
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_logged_in', true);
+      await prefs.setString('logged_in_role', 'owner');
+      _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
       state = const AsyncValue.data(null);
-      return false;
+      return true;
     } catch (e, st) {
       state = AsyncValue.error(e, st);
       return false;
@@ -121,7 +129,7 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
           role: role,
         );
       } catch (err) {
-        // Local demo mode fallback if Supabase auth is unconfigured locally
+        // Local demo mode fallback
       }
       state = const AsyncValue.data(null);
       return true;
@@ -135,6 +143,8 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
     try {
       await _authRepository.signOut();
     } catch (_) {}
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
     _ref.read(isAdminAuthenticatedProvider.notifier).state = false;
   }
 

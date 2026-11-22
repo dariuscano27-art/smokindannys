@@ -3,6 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../auth/presentation/auth_provider.dart';
+import '../../cart/presentation/cart_modal.dart';
+import '../../cart/presentation/cart_provider.dart';
+import '../../profile/presentation/customer_profile_modal.dart';
 
 class LandingScreen extends ConsumerStatefulWidget {
   const LandingScreen({super.key});
@@ -21,122 +24,20 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
   }
 
   void _checkAuthAndProceed(VoidCallback onAuthenticated) {
-    final authRepo = ref.read(authRepositoryProvider);
-    final user = authRepo.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please sign in first to continue to cart & ordering.'),
-          backgroundColor: AppTheme.primaryMaroon,
-          action: SnackBarAction(
-            label: 'Sign In',
-            textColor: Colors.white,
-            onPressed: () => context.push('/login'),
-          ),
-        ),
+    final isAuthenticated = ref.read(isAdminAuthenticatedProvider) ||
+        ref.read(authRepositoryProvider).currentUser != null;
+
+    if (!isAuthenticated) {
+      AppToast.show(
+        context,
+        message: 'Please sign in first to continue to cart & ordering.',
+        actionLabel: 'Sign In',
+        onAction: () => context.push('/login'),
       );
       context.push('/login');
     } else {
       onAuthenticated();
     }
-  }
-
-  void _showPortalSelectionDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: const Column(
-          children: [
-            Icon(Icons.outdoor_grill_rounded, size: 36, color: AppTheme.primaryMaroon),
-            SizedBox(height: 12),
-            Text(
-              'SELECT PORTAL',
-              style: TextStyle(
-                color: AppTheme.primaryMaroon,
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1,
-              ),
-            ),
-            SizedBox(height: 4),
-            Text(
-              'Choose your role to log in or register',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: AppTheme.mutedText, fontSize: 12),
-            ),
-          ],
-        ),
-        content: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 360),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // 1. Customer Portal Button (Just "Customer Portal")
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.push('/login');
-                },
-                icon: const Icon(Icons.person_outline, size: 18),
-                label: const Text('Customer Portal'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryMaroon,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // 2. Admin / Owner Portal Button -> Opens Admin/Owner login page (/admin/login)
-              OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.push('/admin/login');
-                },
-                icon: const Icon(Icons.admin_panel_settings_outlined, size: 18, color: AppTheme.primaryMaroon),
-                label: const Text('Admin / Owner Portal', style: TextStyle(color: AppTheme.primaryMaroon)),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppTheme.primaryMaroon, width: 1.5),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ),
-              const SizedBox(height: 12),
-
-              // 3. Staff / Cashier POS -> Opens Admin/Owner portal login for staff as well
-              OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.pop(context);
-                  context.push('/admin/login');
-                },
-                icon: const Icon(Icons.point_of_sale_outlined, size: 18, color: AppTheme.primaryMaroon),
-                label: const Text('Staff / Cashier POS', style: TextStyle(color: AppTheme.primaryMaroon)),
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppTheme.primaryMaroon, width: 1.5),
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-                  textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                ),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          Center(
-            child: TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel', style: TextStyle(color: AppTheme.mutedText, fontWeight: FontWeight.bold)),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -165,7 +66,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                     const SizedBox(height: 50),
                     _buildCategoryBar(context),
                     const SizedBox(height: 50),
-                    _buildPopularSection(context, isDesktop),
+                    _buildPopularSection(context),
                     const SizedBox(height: 60),
                     _buildFooter(context),
                   ],
@@ -222,6 +123,10 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
               const SizedBox(width: 18),
               _navLink('Offers', () => _showInfoDialog(context, 'Special Offers', 'Enjoy 20% off on all smoked ribs every weekend! Free delivery for orders over ₱1,000.')),
               const SizedBox(width: 18),
+              _navLink('Locations', () => _showInfoDialog(context, 'Our Locations', '📍 Main Branch: 123 Smokelin St, Quezon City\n📍 South Branch: 45 Grill Ave, Makati City')),
+              const SizedBox(width: 18),
+              _navLink('Our Story', () => _showInfoDialog(context, 'Our Story', 'Smokin Dannys BBQ was founded with a passion for authentic slow-cooked smoked meats and rich family recipes.')),
+              const SizedBox(width: 18),
               _navLink('Rewards', () => _showInfoDialog(context, 'Rewards Program', 'Earn 1 point for every ₱100 spent and redeem free burgers, steaks, and drinks!')),
             ],
           ],
@@ -263,51 +168,161 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             ),
           ),
           const SizedBox(width: 12),
-          Stack(
-            alignment: Alignment.topRight,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 22),
-                onPressed: () {
-                  _checkAuthAndProceed(() {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Your Cart is currently empty.')),
-                    );
-                  });
-                },
-              ),
-              Positioned(
-                right: 4,
-                top: 4,
-                child: Container(
-                  width: 15,
-                  height: 15,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
+
+          // Reactive Cart Button with Dynamic Badge
+          Consumer(
+            builder: (context, ref, child) {
+              final cartCount = ref.watch(cartTotalCountProvider);
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white, size: 22),
+                    onPressed: () {
+                      _checkAuthAndProceed(() => showCartModal(context, ref));
+                    },
                   ),
-                  alignment: Alignment.center,
-                  child: const Text('0', style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 8, fontWeight: FontWeight.bold)),
-                ),
-              ),
-            ],
+                  if (cartCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.champagneGold,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$cartCount',
+                          style: const TextStyle(
+                            color: AppTheme.primaryMaroon,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
           const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: () => _showPortalSelectionDialog(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white,
-              foregroundColor: AppTheme.primaryMaroon,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-            ),
-            child: const Text('Login / Register', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+
+          Consumer(
+            builder: (context, ref, child) {
+              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
+                  ref.watch(authRepositoryProvider).currentUser != null;
+
+              if (!isAuthenticated) {
+                return ElevatedButton(
+                  onPressed: () => context.push('/login'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: AppTheme.primaryMaroon,
+                    padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                  ),
+                  child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                );
+              } else {
+                return Row(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () => showCustomerProfileModal(context, ref),
+                      icon: const Icon(Icons.person_pin_rounded, size: 16),
+                      label: const Text('Profile', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.softMaroon,
+                        foregroundColor: AppTheme.primaryMaroon,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    ElevatedButton.icon(
+                      onPressed: () => showSignOutConfirmationDialog(context, ref),
+                      icon: const Icon(Icons.logout_rounded, size: 16),
+                      label: const Text('Sign Out', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: AppTheme.primaryMaroon,
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                      ),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
           const SizedBox(width: 24),
         ] else ...[
-          TextButton(
-            onPressed: () => _showPortalSelectionDialog(context),
-            child: const Text('Login / Register', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+          // Mobile Actions
+          Consumer(
+            builder: (context, ref, child) {
+              final cartCount = ref.watch(cartTotalCountProvider);
+              return Stack(
+                alignment: Alignment.topRight,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.shopping_bag_outlined, color: Colors.white),
+                    onPressed: () {
+                      _checkAuthAndProceed(() => showCartModal(context, ref));
+                    },
+                  ),
+                  if (cartCount > 0)
+                    Positioned(
+                      right: 4,
+                      top: 4,
+                      child: Container(
+                        width: 18,
+                        height: 18,
+                        decoration: const BoxDecoration(
+                          color: AppTheme.champagneGold,
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '$cartCount',
+                          style: const TextStyle(
+                            color: AppTheme.primaryMaroon,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
+          ),
+          Consumer(
+            builder: (context, ref, child) {
+              final isAuthenticated = ref.watch(isAdminAuthenticatedProvider) ||
+                  ref.watch(authRepositoryProvider).currentUser != null;
+
+              if (!isAuthenticated) {
+                return IconButton(
+                  icon: const Icon(Icons.login_rounded, color: Colors.white),
+                  onPressed: () => context.push('/login'),
+                );
+              } else {
+                return Row(
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.person_outline_rounded, color: Colors.white),
+                      onPressed: () => showCustomerProfileModal(context, ref),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.logout_rounded, color: Colors.white),
+                      onPressed: () => showSignOutConfirmationDialog(context, ref),
+                    ),
+                  ],
+                );
+              }
+            },
           ),
           const SizedBox(width: 8),
         ],
@@ -432,12 +447,12 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
                 ],
               ),
               const SizedBox(height: 40),
-              Wrap(
-                spacing: 24,
-                runSpacing: 12,
+              Row(
                 children: [
                   _heroFeatureItem(Icons.flash_on, 'Delivery or pickup', 'Choose what suits you'),
+                  const SizedBox(width: 24),
                   _heroFeatureItem(Icons.eco, 'Fresh ingredients', 'Prepared with care'),
+                  const SizedBox(width: 24),
                   _heroFeatureItem(Icons.local_fire_department, 'Cooked to order', 'Made for your meal'),
                 ],
               ),
@@ -512,7 +527,6 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
 
   Widget _heroFeatureItem(IconData icon, String title, String subtitle) {
     return Row(
-      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           padding: const EdgeInsets.all(6),
@@ -594,14 +608,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
     );
   }
 
-  Widget _buildPopularSection(BuildContext context, bool isDesktop) {
-    final items = [
-      {'name': 'The Ultimate Rib', 'price': '₱599.00', 'image': 'Menu_Food_Photos/01_The_Ultimate_Rib.jpg'},
-      {'name': 'Trio Baby Back Ribs', 'price': '₱899.00', 'image': 'Menu_Food_Photos/02_Trio_Baby_Back_Ribs.jpg'},
-      {'name': 'Ultimate BBQ Platter', 'price': '₱1,199.00', 'image': 'Menu_Food_Photos/03_Ultimate_BBQ_Platter.jpg'},
-      {'name': 'Pizza & Pasta Sisig', 'price': '₱399.00', 'image': 'Menu_Food_Photos/06_Pizza_and_Pasta_Sisig.jpg'},
-    ];
-
+  Widget _buildPopularSection(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -627,20 +634,16 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        GridView.builder(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: isDesktop ? 4 : 2,
-            childAspectRatio: 0.78,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-          ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return _menuItemCard(context, item['name']!, item['price']!, item['image']!);
-          },
+        Row(
+          children: [
+            Expanded(child: _menuItemCard(context, 'The Ultimate Rib', '₱599.00', 'Menu_Food_Photos/01_The_Ultimate_Rib.jpg')),
+            const SizedBox(width: 16),
+            Expanded(child: _menuItemCard(context, 'Trio Baby Back Ribs', '₱899.00', 'Menu_Food_Photos/02_Trio_Baby_Back_Ribs.jpg')),
+            const SizedBox(width: 16),
+            Expanded(child: _menuItemCard(context, 'Ultimate BBQ Platter', '₱1,199.00', 'Menu_Food_Photos/03_Ultimate_BBQ_Platter.jpg')),
+            const SizedBox(width: 16),
+            Expanded(child: _menuItemCard(context, 'Pizza & Pasta Sisig', '₱399.00', 'Menu_Food_Photos/06_Pizza_and_Pasta_Sisig.jpg')),
+          ],
         ),
       ],
     );
@@ -648,6 +651,7 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
 
   Widget _menuItemCard(BuildContext context, String name, String price, String imageUrl) {
     return Container(
+      height: 280,
       decoration: BoxDecoration(
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(20),
@@ -671,21 +675,24 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.darkText, fontSize: 13, fontWeight: FontWeight.bold)),
+          Text(name, maxLines: 1, overflow: TextOverflow.ellipsis, style: const TextStyle(color: AppTheme.darkText, fontSize: 14, fontWeight: FontWeight.bold)),
           const SizedBox(height: 4),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(price, style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 13, fontWeight: FontWeight.w900)),
+              Text(price, style: const TextStyle(color: AppTheme.primaryMaroon, fontSize: 14, fontWeight: FontWeight.w900)),
               IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
                 icon: const Icon(Icons.add_shopping_cart, color: AppTheme.primaryMaroon, size: 16),
                 onPressed: () {
                   _checkAuthAndProceed(() {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Added $name to cart successfully!')),
-                    );
+                    final cleanPrice = double.tryParse(price.replaceAll('₱', '').replaceAll(',', '')) ?? 599.0;
+                    ref.read(cartProvider.notifier).addItem({
+                      'name': name,
+                      'price': cleanPrice,
+                      'image_url': imageUrl,
+                      'category': 'BBQ & Grills',
+                    });
+                    AppToast.show(context, message: 'Added $name to cart!');
                   });
                 },
               ),
@@ -697,23 +704,13 @@ class _LandingScreenState extends ConsumerState<LandingScreen> {
   }
 
   Widget _buildFooter(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const Text(
-            '© 2025 SMOKIN DANNYS BBQ & POS. All rights reserved.',
-            style: TextStyle(color: AppTheme.mutedText, fontSize: 11),
-          ),
-          InkWell(
-            onTap: () => context.push('/admin/login'),
-            child: const Text(
-              'Staff / Admin Portal →',
-              style: TextStyle(color: AppTheme.primaryMaroon, fontSize: 11, fontWeight: FontWeight.bold),
-            ),
-          ),
-        ],
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 20),
+      child: Center(
+        child: Text(
+          '© 2025 SMOKIN DANNYS BBQ & POS. All rights reserved.',
+          style: TextStyle(color: AppTheme.mutedText, fontSize: 11),
+        ),
       ),
     );
   }

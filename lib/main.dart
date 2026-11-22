@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/config/supabase_config.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'features/auth/presentation/auth_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,9 +16,15 @@ void main() async {
     debugPrint('Supabase initialization warning: $e');
   }
 
+  final prefs = await SharedPreferences.getInstance();
+  final isLoggedIn = prefs.getBool('is_logged_in') ?? false;
+
   runApp(
-    const ProviderScope(
-      child: SmokinDannysApp(),
+    ProviderScope(
+      overrides: [
+        isAdminAuthenticatedProvider.overrideWith((ref) => isLoggedIn),
+      ],
+      child: const SmokinDannysApp(),
     ),
   );
 }

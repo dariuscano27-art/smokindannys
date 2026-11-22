@@ -28,6 +28,21 @@ final routerNotifierProvider = Provider<RouterNotifier>((ref) {
   return RouterNotifier(ref);
 });
 
+AdminLoginPage _buildAdminLoginWidget(BuildContext context, Ref ref) {
+  return AdminLoginPage(
+    onLogin: (username, password, rememberMe) async {
+      final success = await ref
+          .read(authControllerProvider.notifier)
+          .adminSignIn(username, password, rememberMe);
+      if (success && context.mounted) {
+        context.go('/owner/dashboard');
+        return true;
+      }
+      return false;
+    },
+  );
+}
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider);
 
@@ -41,7 +56,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           state.matchedLocation == '/cashier/pos';
 
       // On mobile app (non-web), enforce staff POS & admin portal exclusively
-      if (!kIsWeb && !isAdminAuthenticated && state.matchedLocation != '/admin/login') {
+      if (!kIsWeb && !isAdminAuthenticated && state.matchedLocation != '/admin/login' && state.matchedLocation != '/staff/login' && state.matchedLocation != '/staff') {
         return '/admin/login';
       }
 
@@ -65,18 +80,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/admin/login',
         name: 'admin_login',
-        builder: (context, state) => AdminLoginPage(
-          onLogin: (username, password, rememberMe) async {
-            final success = await ref
-                .read(authControllerProvider.notifier)
-                .adminSignIn(username, password, rememberMe);
-            if (success && context.mounted) {
-              context.go('/owner/dashboard');
-              return true;
-            }
-            return false;
-          },
-        ),
+        builder: (context, state) => _buildAdminLoginWidget(context, ref),
+      ),
+      GoRoute(
+        path: '/staff/login',
+        name: 'staff_login',
+        builder: (context, state) => _buildAdminLoginWidget(context, ref),
+      ),
+      GoRoute(
+        path: '/staff',
+        name: 'staff',
+        builder: (context, state) => _buildAdminLoginWidget(context, ref),
       ),
       GoRoute(
         path: '/terms',
