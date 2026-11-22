@@ -48,6 +48,21 @@ AdminLoginPage _buildAdminLoginWidget(BuildContext context, Ref ref) {
   );
 }
 
+AdminLoginPage _buildStaffLoginWidget(BuildContext context, Ref ref) {
+  return AdminLoginPage(
+    onLogin: (username, password, rememberMe) async {
+      final success = await ref
+          .read(authControllerProvider.notifier)
+          .adminSignIn(username, password, rememberMe);
+      if (success && context.mounted) {
+        context.go('/cashier/pos');
+        return true;
+      }
+      return false;
+    },
+  );
+}
+
 final appRouterProvider = Provider<GoRouter>((ref) {
   final notifier = ref.watch(routerNotifierProvider);
 
@@ -56,15 +71,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: kIsWeb ? '/' : '/admin/login',
     redirect: (context, state) {
       final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
-      final isGoingToProtected = state.matchedLocation == '/owner/dashboard' ||
-          state.matchedLocation == '/admin/dashboard' ||
-          state.matchedLocation == '/cashier/pos' ||
-          state.matchedLocation == '/customer/home';
+      final location = state.matchedLocation;
 
-      // Protect authenticated routes
-      if (isGoingToProtected && !isAdminAuthenticated) {
+      // Handle direct typing of /admin or /staff
+      if (location == '/admin') return '/admin/login';
+      if (location == '/staff') return '/staff/login';
+
+      // Protect Admin Dashboard
+      if ((location == '/owner/dashboard' || location == '/admin/dashboard') && !isAdminAuthenticated) {
+        return '/admin/login';
+      }
+
+      // Protect Staff POS
+      if (location == '/cashier/pos' && !isAdminAuthenticated) {
+        return '/staff/login';
+      }
+
+      // Protect Customer Home
+      if (location == '/customer/home' && !isAdminAuthenticated) {
         return '/login';
       }
+
       return null;
     },
     routes: [
@@ -79,19 +106,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const LoginScreen(),
       ),
       GoRoute(
+        path: '/admin',
+        name: 'admin_root',
+        builder: (context, state) => _buildAdminLoginWidget(context, ref),
+      ),
+      GoRoute(
         path: '/admin/login',
         name: 'admin_login',
         builder: (context, state) => _buildAdminLoginWidget(context, ref),
       ),
       GoRoute(
-        path: '/staff/login',
-        name: 'staff_login',
-        builder: (context, state) => _buildAdminLoginWidget(context, ref),
+        path: '/staff',
+        name: 'staff_root',
+        builder: (context, state) => _buildStaffLoginWidget(context, ref),
       ),
       GoRoute(
-        path: '/staff',
-        name: 'staff',
-        builder: (context, state) => _buildAdminLoginWidget(context, ref),
+        path: '/staff/login',
+        name: 'staff_login',
+        builder: (context, state) => _buildStaffLoginWidget(context, ref),
       ),
       GoRoute(
         path: '/terms',

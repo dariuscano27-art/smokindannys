@@ -14,8 +14,9 @@
 - `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (Integrated the complete 11-item left sidebar navigation into `OwnerDashboardScreen`).
 - `[x]` Phase 13: Distinct Role-Based Routing & Separation (Configured GoRouter and Login redirection for Customer, Staff POS, and Admin).
 - `[x]` Phase 14: Real-time Order Synchronization (`sharedOrdersProvider` implemented so that when a customer places an order from the cart, it **instantly appears** in the Admin Dashboard Overview / Order Management and Staff POS Online Orders queue).
-- `[ ]` Phase 15: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
-- `[ ]` Phase 16: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
-- `[ ]` Phase 17: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
-- `[ ]` Phase 18: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
-- `[ ]` Phase 19: Automated Testing, Security Audit & Client Deployment Preparation.
+- `[x]` Phase 15: Explicit Role Identification Badges (Added prominent role badges at the top of Customer Portal, Staff POS, and Admin Dashboard so they are instantly recognizable and distinct).
+- `[ ]` Phase 16: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).
+- `[ ]` Phase 17: Inventory & Recipe Ingredient Deduction (Automatic stock deduction on order finalization).
+- `[ ]` Phase 18: Payment & QR Code Integration (QR Ph / payment provider abstraction and webhook verification).
+- `[ ]` Phase 19: Native Android Bluetooth / USB Thermal Printer Integration (Kotlin platform channel for ESC/POS receipts).
+- `[ ]` Phase 20: Automated Testing, Security Audit & Client Deployment Preparation.
