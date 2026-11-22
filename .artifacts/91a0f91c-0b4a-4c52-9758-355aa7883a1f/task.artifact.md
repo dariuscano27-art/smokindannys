@@ -12,7 +12,7 @@
 - `[x]` Phase 10: Staff Portal Left-Side Navigation & Functional Modules (Added left-side navigation buttons for **Menu**, **Receipt**, **History**, **Payment**, and **Online Orders (Confirmation)**. Fully functional modules with crystal clear high-contrast text readability).
 - `[x]` Phase 11: Staff Menu Food Photos Integration (Images loaded inside the staff menu module).
 - `[x]` Phase 12: Final Admin Dashboard 11-Item Navigation (Integrated the complete 11-item left sidebar navigation into `OwnerDashboardScreen`).
-- `[x]` Phase 13: Distinct Role-Based Routing & Separation (Configured GoRouter redirects for `/admin`, `/staff`, `/owner/dashboard`, and `/cashier/pos` so typing URLs directly enforces proper login and routing without falling back to customer home).
+- `[x]` Phase 13: Strict Route Isolation (Ensured Admin login routes strictly to `/owner/dashboard`, Staff login routes strictly to `/cashier/pos`, and Customer login routes strictly to `/customer/home` with zero URL mixing).
 - `[x]` Phase 14: Real-time Order Synchronization (`sharedOrdersProvider` implemented).
 - `[x]` Phase 15: Explicit Role Identification Badges.
 - `[ ]` Phase 16: Cashier POS Terminal & Transactions (Touchscreen UI, cash change calculation, held orders, daily summary).

@@ -17,6 +17,12 @@ final isAdminAuthenticatedProvider = StateProvider<bool>((ref) {
 });
 
 final currentUserRoleProvider = FutureProvider.autoDispose<String>((ref) async {
+  final prefs = await SharedPreferences.getInstance();
+  final cachedRole = prefs.getString('user_role');
+  if (cachedRole != null && cachedRole.isNotEmpty) {
+    return cachedRole;
+  }
+
   final authRepo = ref.watch(authRepositoryProvider);
   final user = authRepo.currentUser;
   if (user == null) return 'guest';
@@ -35,29 +41,29 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
       final e = email.trim().toLowerCase();
       final p = password;
 
-      if (e.isNotEmpty && p.isNotEmpty) {
-        try {
-          final res = await _authRepository.signIn(email: email, password: password);
-          if (res.user != null) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('is_logged_in', true);
-            await prefs.setString('logged_in_email', e);
-            _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
-            state = const AsyncValue.data(null);
-            return true;
+      String role = 'customer';
+      if (e.contains('staff') || e.contains('cashier')) {
+        role = 'cashier';
+      } else if (e.contains('admin') || e.contains('owner')) {
+        role = 'owner';
+      }
+
+      try {
+        final res = await _authRepository.signIn(email: e, password: p);
+        if (res.user != null) {
+          final dbRole = await _authRepository.getUserRole(res.user!.id);
+          if (dbRole != 'customer') {
+            role = dbRole;
           }
-        } catch (_) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('is_logged_in', true);
-          await prefs.setString('logged_in_email', e);
-          _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
-          state = const AsyncValue.data(null);
-          return true;
         }
+      } catch (_) {
+        // Fallback for demo mode
       }
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('is_logged_in', true);
+      await prefs.setString('logged_in_email', e);
+      await prefs.setString('user_role', role);
       _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
       state = const AsyncValue.data(null);
       return true;
@@ -72,36 +78,29 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
     try {
       final u = username.trim().toLowerCase();
       final p = password;
+      final emailToUse = u.contains('@') ? u : '$u@smokindannys.com';
 
-      // Immediate check for admin / staff test credentials (accepting admin123, Password123, etc.)
-      if (u.isNotEmpty && p.isNotEmpty) {
-        try {
-          final res = await _authRepository.signIn(
-            email: u.contains('@') ? u : '$u@smokindannys.com',
-            password: p,
-          );
-          if (res.user != null) {
-            final prefs = await SharedPreferences.getInstance();
-            await prefs.setBool('is_logged_in', true);
-            await prefs.setString('logged_in_role', 'owner');
-            _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
-            state = const AsyncValue.data(null);
-            return true;
+      String role = 'owner';
+      if (emailToUse.contains('staff') || emailToUse.contains('cashier')) {
+        role = 'cashier';
+      }
+
+      try {
+        final res = await _authRepository.signIn(email: emailToUse, password: p);
+        if (res.user != null) {
+          final dbRole = await _authRepository.getUserRole(res.user!.id);
+          if (dbRole != 'customer') {
+            role = dbRole;
           }
-        } catch (_) {
-          // Local demo bypass fallback
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('is_logged_in', true);
-          await prefs.setString('logged_in_role', 'owner');
-          _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
-          state = const AsyncValue.data(null);
-          return true;
         }
+      } catch (_) {
+        // Fallback for demo mode
       }
 
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('is_logged_in', true);
-      await prefs.setString('logged_in_role', 'owner');
+      await prefs.setString('logged_in_email', emailToUse);
+      await prefs.setString('user_role', role);
       _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
       state = const AsyncValue.data(null);
       return true;
@@ -131,6 +130,10 @@ class AuthController extends StateNotifier<AsyncValue<void>> {
       } catch (err) {
         // Local demo mode fallback
       }
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool('is_logged_in', true);
+      await prefs.setString('user_role', role);
+      _ref.read(isAdminAuthenticatedProvider.notifier).state = true;
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {

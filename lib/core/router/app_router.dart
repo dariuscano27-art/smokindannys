@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/presentation/admin_login_page.dart';
 import '../../features/auth/presentation/auth_provider.dart';
 import '../../features/auth/presentation/login_screen.dart';
@@ -34,9 +35,13 @@ AdminLoginPage _buildAdminLoginWidget(BuildContext context, Ref ref) {
       final success = await ref
           .read(authControllerProvider.notifier)
           .adminSignIn(username, password, rememberMe);
-      if (success && context.mounted) {
+      if (!context.mounted) return false;
+      if (success) {
         final email = username.toLowerCase();
-        if (email.contains('staff') || email.contains('cashier')) {
+        final prefs = await SharedPreferences.getInstance();
+        final role = prefs.getString('user_role') ?? (email.contains('staff') ? 'cashier' : 'owner');
+        if (!context.mounted) return false;
+        if (role == 'cashier' || email.contains('staff') || email.contains('cashier')) {
           context.go('/cashier/pos');
         } else {
           context.go('/owner/dashboard');
@@ -54,7 +59,11 @@ AdminLoginPage _buildStaffLoginWidget(BuildContext context, Ref ref) {
       final success = await ref
           .read(authControllerProvider.notifier)
           .adminSignIn(username, password, rememberMe);
-      if (success && context.mounted) {
+      if (!context.mounted) return false;
+      if (success) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_role', 'cashier');
+        if (!context.mounted) return false;
         context.go('/cashier/pos');
         return true;
       }
@@ -69,7 +78,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     refreshListenable: notifier,
     initialLocation: kIsWeb ? '/' : '/admin/login',
-    redirect: (context, state) {
+    redirect: (context, state) async {
       final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
       final location = state.matchedLocation;
 
@@ -77,19 +86,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       if (location == '/admin') return '/admin/login';
       if (location == '/staff') return '/staff/login';
 
-      // Protect Admin Dashboard
-      if ((location == '/owner/dashboard' || location == '/admin/dashboard') && !isAdminAuthenticated) {
-        return '/admin/login';
+      if (!isAdminAuthenticated) {
+        if (location == '/owner/dashboard' || location == '/admin/dashboard') {
+          return '/admin/login';
+        }
+        if (location == '/cashier/pos') {
+          return '/staff/login';
+        }
+        if (location == '/customer/home') {
+          return '/login';
+        }
+        return null;
       }
 
-      // Protect Staff POS
-      if (location == '/cashier/pos' && !isAdminAuthenticated) {
-        return '/staff/login';
-      }
+      // If authenticated, enforce strict role-based access control
+      final prefs = await SharedPreferences.getInstance();
+      final role = prefs.getString('user_role') ?? 'customer';
 
-      // Protect Customer Home
-      if (location == '/customer/home' && !isAdminAuthenticated) {
-        return '/login';
+      if (role == 'owner' || role == 'admin') {
+        // Admin must be on /owner/dashboard
+        if (location == '/customer/home' || location == '/cashier/pos' || location == '/') {
+          return '/owner/dashboard';
+        }
+      } else if (role == 'cashier' || role == 'staff') {
+        // Staff must be on /cashier/pos
+        if (location == '/customer/home' || location == '/owner/dashboard' || location == '/') {
+          return '/cashier/pos';
+        }
+      } else {
+        // Customer must be on /customer/home or /
+        if (location == '/owner/dashboard' || location == '/cashier/pos') {
+          return '/customer/home';
+        }
       }
 
       return null;
