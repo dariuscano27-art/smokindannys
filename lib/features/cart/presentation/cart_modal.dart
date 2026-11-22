@@ -518,19 +518,31 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
 
           ...paymentMethods.map((method) {
             final isSelected = _selectedPayment == method['id'];
-            return Container(
-              margin: const EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                color: isSelected ? AppTheme.softMaroon : AppTheme.surface,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: isSelected ? AppTheme.primaryMaroon : AppTheme.borderMaroon, width: isSelected ? 1.8 : 1),
-              ),
-              child: RadioListTile<String>(
-                value: method['id'] as String,
-                groupValue: _selectedPayment,
-                activeColor: AppTheme.primaryMaroon,
-                title: Row(
+            return InkWell(
+              onTap: () => setState(() => _selectedPayment = method['id'] as String),
+              borderRadius: BorderRadius.circular(16),
+              child: Container(
+                margin: const EdgeInsets.only(bottom: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                decoration: BoxDecoration(
+                  color: isSelected ? AppTheme.softMaroon : AppTheme.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: isSelected ? AppTheme.primaryMaroon : AppTheme.borderMaroon, width: isSelected ? 1.8 : 1),
+                ),
+                child: Row(
                   children: [
+                    Container(
+                      width: 22,
+                      height: 22,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isSelected ? AppTheme.primaryMaroon : AppTheme.borderMaroon,
+                          width: isSelected ? 6 : 2,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
                     Icon(method['icon'] as IconData, color: AppTheme.primaryMaroon, size: 20),
                     const SizedBox(width: 12),
                     Text(
@@ -539,7 +551,6 @@ class _MultiStepCheckoutSheetState extends ConsumerState<_MultiStepCheckoutSheet
                     ),
                   ],
                 ),
-                onChanged: (val) => setState(() => _selectedPayment = val!),
               ),
             );
           }),
