@@ -35,7 +35,12 @@ AdminLoginPage _buildAdminLoginWidget(BuildContext context, Ref ref) {
           .read(authControllerProvider.notifier)
           .adminSignIn(username, password, rememberMe);
       if (success && context.mounted) {
-        context.go('/owner/dashboard');
+        final email = username.toLowerCase();
+        if (email.contains('staff') || email.contains('cashier')) {
+          context.go('/cashier/pos');
+        } else {
+          context.go('/owner/dashboard');
+        }
         return true;
       }
       return false;
@@ -51,18 +56,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: kIsWeb ? '/' : '/admin/login',
     redirect: (context, state) {
       final isAdminAuthenticated = ref.read(isAdminAuthenticatedProvider);
-      final isGoingToAdminDashboard = state.matchedLocation == '/owner/dashboard' ||
+      final isGoingToProtected = state.matchedLocation == '/owner/dashboard' ||
           state.matchedLocation == '/admin/dashboard' ||
-          state.matchedLocation == '/cashier/pos';
+          state.matchedLocation == '/cashier/pos' ||
+          state.matchedLocation == '/customer/home';
 
-      // On mobile app (non-web), enforce staff POS & admin portal exclusively
-      if (!kIsWeb && !isAdminAuthenticated && state.matchedLocation != '/admin/login' && state.matchedLocation != '/staff/login' && state.matchedLocation != '/staff') {
-        return '/admin/login';
-      }
-
-      // Protect admin dashboard route from unauthenticated users
-      if (isGoingToAdminDashboard && !isAdminAuthenticated) {
-        return '/admin/login';
+      // Protect authenticated routes
+      if (isGoingToProtected && !isAdminAuthenticated) {
+        return '/login';
       }
       return null;
     },
